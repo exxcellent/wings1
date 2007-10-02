@@ -1,0 +1,168 @@
+<!-- -*- html -*- -->
+<template name="LabelCG" for="org.wings.SLabel">
+
+<property type="SIcon" name="clickableFallbackIcon">org/wings/icons/Pencil.gif</property>
+
+public void writeIcon(Device device, SIcon icon, SLabel label, AnchorProperties anchor) throws IOException {
+    if (icon != null) {
+        writeAnchorStart(device, anchor, label);
+        %><img border="0"<%
+        if (label.isImageAbsBottom()) {
+            %> align="absbottom"<%
+        }
+        /* write optional attributes ..*/
+        %><%|src=icon.getURL()%><%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        Utils.writeEvents(device, label);
+        %> /><%
+        writeAnchorEnd(device, anchor);
+    }
+}
+
+public void writeText(Device device, SLabel label, AnchorProperties anchor) throws IOException {
+    final String text = label.getText();
+    if (text != null) {
+        writeAnchorStart(device, anchor, label);
+        final boolean noBreak = label.isNoBreak();
+
+        if (noBreak) {
+            %><nobr><%
+        }
+        %><%=text%><%
+        if (noBreak) {
+            %></nobr><%
+        }
+        writeAnchorEnd(device, anchor);
+    }
+}
+
+public void writeAnchorStart(Device device, AnchorProperties anchor, SLabel label) throws IOException {
+    if ( anchor!=null ) {
+        if ( anchor.isFormAnchor() ) {
+            %><a href="" onclick="return submitForm(event, '<%=anchor.getFormEventName()%>','<%=anchor.getFormEventValue()%>')"<%
+        } else {
+            %><a href="<%=anchor.getURL().toString()%>"<%|target=anchor.getTarget()%><%
+        }
+        %>><%
+    }
+}
+
+public void writeAnchorEnd(Device device, AnchorProperties anchor) throws IOException {
+   if ( anchor!=null ) {
+        %></a><%
+    }
+}
+
+public boolean writeSpan(Device device, SComponent component) throws IOException {
+    boolean hasSpan = false;
+    String style = Utils.style(component);
+    String ttip  = component.getToolTipText();
+    if (style != null || ttip != null ) {
+        hasSpan = true;
+        %><span<%
+    }
+    if (style != null ) {
+        %> class="<%=style%>"<%
+    }
+    if (ttip != null ) {
+        Utils.writeToolTip(device, component);
+    }
+    if (hasSpan == true) {
+        %>><%
+    }  
+    return hasSpan;
+}
+
+<write>
+<%
+    String text = component.getText();
+    SIcon  icon = component.isEnabled() ? component.getIcon() : component.getDisabledIcon();
+    final int horizontalTextPosition = component.getHorizontalTextPosition();
+    final int verticalTextPosition   = component.getVerticalTextPosition();
+    final AnchorProperties anchor = AnchorRenderStack.get();
+
+    /*
+    * fallback icon in case we are clickable, but there is nothing
+    * to click on (no icon nor text).
+    */
+    if (icon == null) {
+        if (anchor != null && (text == null || text.length() == 0)) {
+            // no text either.
+            icon = clickableFallbackIcon;
+        }
+    }
+
+    boolean hasSpan = writeSpan( device, component );
+
+    if (icon == null) {
+        writeText(device, component, anchor);      
+    } else if (text == null || text.length() == 0) {
+        writeIcon(device, icon, component, anchor);
+    } else {
+        int cols = 0;
+        %><table cellspacing="0"><%
+        // if we are on the top, create a top row
+        if (horizontalTextPosition == CENTER && verticalTextPosition == TOP) {
+            %><tr><td><%
+            writeText(device, component, anchor);
+            %></td></tr><%
+        }
+
+        %><tr><%
+
+        if (horizontalTextPosition == LEFT) {
+            %><td<%
+            if (verticalTextPosition == TOP) {
+                %> valign="top"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="bottom"<%
+            }
+            %>><%
+            writeText(device, component, anchor);
+            %></td><%
+        }
+
+        %><td<%
+        /* move icon the opposite direction the text goes. But only
+        * if the horizonal text-position is not center, since this is
+        * renderered in another row, then.
+        */
+        if (horizontalTextPosition != CENTER) {
+            if (verticalTextPosition == TOP) {
+                %> valign="bottom"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="top"<%
+            }
+        }
+        %>><%
+        writeIcon(device, icon, component, anchor); %></td><%
+
+        if (horizontalTextPosition == RIGHT) {
+            %><td<%
+            if (verticalTextPosition == TOP) {
+                %> valign="top"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="bottom"<%
+            }
+            %>><%
+            writeText(device, component, anchor);
+            %></td><%
+        }
+
+        %></tr><%
+
+        // if we are on the top, create a top row
+        if (horizontalTextPosition == CENTER && verticalTextPosition==BOTTOM) {
+            %><tr><td><%
+            writeText(device, component, anchor);
+            %></td></tr><%
+        }
+        %></table><%
+    }
+    if ( hasSpan == true ) {
+        %></span><%
+    }
+
+%></write>
+</template>

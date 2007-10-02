@@ -1,0 +1,21 @@
+<h1>Testing the web application</h1>
+<p>It's now time to test the application.</p>
+<p>If you had installed all as described in this tutorial, you see the
+result of the WingSServlet by changing the URL to "<code><a
+href="http://127.0.0.1:8080/helloWingS/HelloWingS">http://127.0.0.1:8080/helloWingS/HelloWingS</a></code>".</p><p>If
+all is correct, you can the output of the servlet stating
+"HelloWingS!".</p><p>If you like, you can also watch my <a href="../HelloWingS/">"HelloWingS!" servlet</a>.</p>
+<h1>More functionality</h1>
+<p>After created the first application, it's likely you want to do
+much more.</p><p>If you are common with JavaSwing, you are now also
+common with WingS.<br/>All you program in Swing, eg. like creating Buttons,
+adding ActionListenerers or setting Models to Tables, are as easy to
+be done in WingS.</p><p>Just extend your "HelloWingS" servlet by a
+"<code>STable</code>" and see how it works.<br/>Take a look at this
+source: <a href="../source/HelloWingSExt.java">extended wingS application</a>.</p>
+<p>Here you will find my <a href="../HelloWingSExt/">extended servlet</a>.</p>
+<h1>More...</h1>
+<p>You can find more
+information on the <a href="http://j-wings.org">WingS
+homepage</a> or some projects using WingS on the <a
+href="http://www.mercatis.de">mercatis homepage</a>.</p>

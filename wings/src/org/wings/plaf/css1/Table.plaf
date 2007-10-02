@@ -1,0 +1,480 @@
+<template name="TableCG" for="org.wings.STable">
+<import>java.awt.*</import>
+<import>javax.swing.*</import>
+<import>javax.swing.table.*</import>
+<import>org.wings.table.*</import>
+
+<property type="SIcon" name="editIcon">org/wings/icons/Pencil.gif</property>
+
+<comp-property type="org.wings.table.STableCellRenderer" name="defaultRenderer">new org.wings.table.SDefaultTableCellRenderer()</comp-property>
+<comp-property type="org.wings.table.STableCellRenderer" name="headerRenderer">new org.wings.table.SDefaultTableCellRenderer()</comp-property>
+<comp-property type="org.wings.table.STableCellRenderer" name="rowSelectionRenderer">new org.wings.table.SDefaultTableRowSelectionRenderer()</comp-property>
+
+<comp-property type="String" name="style">table</comp-property>
+<comp-property type="String" name="selectionStyle">tableselection</comp-property>
+
+// The fixedTableBorderWidth property allows to override / set the handling of border="x" to a 
+// fixed value Browsers behave different if rules="none" and border="0" vs. only border="0"! 
+// If this property is set only border="x" will be rendered.
+<property type="String" name="fixedTableBorderWidth"></property>
+
+<write>
+<%
+    STable table = (STable)component;
+
+    SDimension dim = component.getPreferredSize();
+    SDimension intercellPadding = table.getIntercellPadding();
+    SDimension intercellSpacing = table.getIntercellSpacing();
+    boolean showHorizontalLines = table.getShowHorizontalLines();
+    boolean showVerticalLines = table.getShowVerticalLines();
+//    boolean isScroll2 = table.getParent() instanceof SScrollPane2;
+
+    int thickness = 0;
+    if (showHorizontalLines || showVerticalLines)
+        thickness = 1;
+
+    int rr = ((showHorizontalLines) ? 1:0) + ((showVerticalLines) ? 2:0);
+
+/*    if (isScroll2) {
+      %><script>
+        function sync<%=table.getComponentId()%>() {
+           var x = document.getElementById("d<%=table.getComponentId()%>").scrollLeft;
+	   var leftVal = (-1 * x) + 'px';
+	   document.getElementById("h<%=table.getComponentId()%>").scrollLeft = x;
+        }
+        </script>
+        <%
+       if (table.isHeaderVisible()) {
+         %><div id="h<%=table.getComponentId()%>" style="left: 0%; top: 0%; width:<%=dim.width%>; overflow:hidden"> <%
+      }
+    }
+*/
+    %><table<%
+    if (dim != null) {
+        %><%|width=dim.width%><%
+        %><%|height=dim.height%><%
+    }
+
+    %><%|class=Utils.style(component)%><%
+    if (getFixedTableBorderWidth() == null) {
+	    %><%|rules=rules[rr]%><%
+	    %><%|border=thickness%><%
+	} else {
+		/* Tweaking: CG configured to have a fixed border="xy" width */
+	    %><%|border=fixedTableBorderWidth%><%	
+	}    
+    %><%|cellspacing=((intercellSpacing != null) ? intercellSpacing.width : null)%><%
+    %><%|cellpadding=((intercellPadding != null) ? intercellPadding.width : null)%><%
+    %>>
+<%
+
+    /*
+     * get viewable area
+     */
+    int startRow = 0;
+    int startCol = 0;
+    int endRow = table.getRowCount();
+    int endCol = table.getColumnCount();
+    Rectangle viewport = table.getViewportSize();
+    if (viewport != null) {
+        startRow = viewport.y;
+        startCol = viewport.x;
+        endRow = Math.min(startRow+viewport.height, endRow);
+        endCol = Math.min(startCol+viewport.width, endCol);
+    }
+
+    SCellRendererPane rendererPane = table.getCellRendererPane();
+
+    /*
+     * render the header 
+     */
+    if (table.isHeaderVisible()) {
+        String style = null;
+        if (table.getHeaderAttributes().size() > 0)
+            style = "_" + table.getComponentId();
+        else if (table.getHeaderStyle() != null)
+            style = table.getHeaderStyle();
+
+        %><thead><%
+/*        if (isScroll2) {
+           writeColSpan(device, table, startCol, endCol);
+        }
+*/
+        %><tr<%|class=style%>><%
+
+        boolean selectionWritten = ((table.getRowSelectionColumn() < 0) ||
+                                   (table.getSelectionModel().getSelectionMode() == SListSelectionModel.NO_SELECTION));
+        for (int c = /*(isScroll2 ? 0 : */startCol/*)*/; c < /*(isScroll2 ? table.getColumnCount() : */endCol/*)*/; c++) {
+            if (!selectionWritten && 
+                c >= table.getRowSelectionColumn() ) {
+                writeHeaderCell(device, table, rendererPane, -1);
+                selectionWritten = true;
+            }
+            writeHeaderCell(device, table, rendererPane, table.convertColumnIndexToModel(c));
+        }
+
+        if (!selectionWritten) {
+            writeEmptyHeaderCell(device, table);
+        }
+	
+	// end of row with newline.
+        %></tr>
+<%
+        %></thead>
+<%
+    }
+
+/*        if (isScroll2) {
+           SScrollPane2 scp = (SScrollPane2)table.getParent();
+           %></table><div id="d<%=table.getComponentId()%>" style="left: 0%; top: 0;<%
+           switch (scp.getVerticalScrollBarPolicy()) {
+               case SScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED: 
+                 %>overflow-x: auto; <%
+               break;
+               case SScrollPane.VERTICAL_SCROLLBAR_NEVER: 
+               break;
+               case SScrollPane.VERTICAL_SCROLLBAR_ALWAYS: 
+                 %>overflow-x: scroll; <%
+               break;
+           }
+
+           switch (scp.getHorizontalScrollBarPolicy()) {
+                case SScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED: 
+                   %>overflow-y: auto; <%
+                break;
+                case SScrollPane.HORIZONTAL_SCROLLBAR_NEVER: 
+                break;
+                case SScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: 
+                   %>overflow-y: scroll; <%
+                break;
+           }
+           if (dim != null) {
+            %><%=dim.toString();%><%
+           }
+           %>" onscroll="sync<%=table.getComponentId()%>()"><%
+           %><table<%
+           if (dim != null) {
+               %><%=dim.toString();%><%
+            }
+           %>><%
+           writeColSpan(device, table, startCol, endCol);
+        }
+*/
+    /*
+     * render row by row
+     */
+    String style = Utils.style(table);
+    String selectionStyle = Utils.selectionStyle(table);
+    int selectionMode = table.getSelectionModel().getSelectionMode();
+    int rowSelectionColumn = table.getRowSelectionColumn();
+        %><tbody>
+<%
+
+    for (int r = /*(isScroll2 ? 0 : */startRow/*)*/; r < /*(isScroll2 ? table.getRowCount() : */endRow/*)*/; r++) {
+        String rowStyle = table.getRowStyle(r);
+
+        String currentRowStyle = rowStyle!=null ? rowStyle :
+	  (table.isRowSelected(r) ?  selectionStyle : style );
+
+        %><tr<%|class=currentRowStyle%><%
+
+        if ( table.getSelectClickCount() > 0 ) {
+            RequestURL rowSelectionAddr = table.getRequestURL();
+            rowSelectionAddr.addParameter(table,
+                                          table.getToggleSelectionParameter(r,-1));
+            %> style="cursor:pointer;" onclick="location.href='<%=rowSelectionAddr.toString()%>';"<%
+        }
+
+        %>><%
+
+        boolean selectionWritten = ((selectionMode == SListSelectionModel.NO_SELECTION)
+                                   || (rowSelectionColumn < 0) || table.getSelectClickCount()>0 );
+
+        for (int c = /*(isScroll2 ? 0 : */startCol/*)*/; c < /*(isScroll2 ? table.getColumnCount() : */endCol/*)*/; c++) {
+            if (!selectionWritten && (c >= rowSelectionColumn)) {
+                writeRowSelection(device, table, rendererPane, r, c);
+                selectionWritten = true;
+            }
+            writeCell(device, table, rendererPane, r, table.convertColumnIndexToModel(c));
+        }
+
+        if (!selectionWritten) {
+            writeRowSelection(device, table, rendererPane, r, endCol);
+        }
+
+	// end of row with newline
+        %></tr>
+<%
+    }
+     %></tbody><tfoot></tfoot>
+<%
+
+    %></table><%
+/*    if (isScroll2) {
+      %></div><%
+    }
+*/
+%>
+</write>
+
+    private static String[] rules = new String[] { "none", "rows", 
+                                                   "cols", "all" };
+
+    /**
+     * write a specific cell to the device
+     */
+    protected void writeCell(Device device, STable table,
+                             SCellRendererPane rendererPane, int row, int col)
+        throws IOException
+    {
+        SComponent comp = null;
+        boolean isEditingCell = table.isEditing()
+            && row == table.getEditingRow()
+            && col == table.getEditingColumn();
+
+        if (isEditingCell)
+            comp = table.getEditorComponent();
+        else
+            comp = table.prepareRenderer(table.getCellRenderer(row, col), row, col);
+
+        %><td<%
+        if (comp == null) {
+            %>></td><%
+            return;
+        }
+
+        final String compStyle = comp.getStyle();
+        %><%|class=compStyle%><%
+	    comp.setStyle(null);
+
+        switch (comp.getHorizontalAlignment()) {
+        case LEFT_ALIGN: 
+             %> align="left"<% 
+             break;
+        case CENTER_ALIGN:
+             %> align="center"<% 
+             break;
+        case RIGHT_ALIGN: 
+             %> align="right"<% 
+             break;
+        }
+
+        switch (comp.getVerticalAlignment()) {
+        case TOP_ALIGN:
+             %> valign="top"<%
+             break;
+        case CENTER_ALIGN:
+             %> valign="center"<% 
+             break;
+        case BOTTOM_ALIGN:
+             %> align="bottom"<%
+             break;
+        }
+
+        if ( table.getEditClickCount()!=2 ) {
+            // close <td..>
+            %>><%
+
+            boolean pushedURL = false;
+            if (!isEditingCell && table.isCellEditable(row, col)) {
+                if (comp instanceof ClickableRenderComponent) {
+                    /* 
+                     * If the component direclty supports clicking on it,
+		     * show a link around it ..
+		     */
+                    if ( table.getShowAsFormComponent() ) {
+                        AnchorRenderStack.push(Utils.event(table), table.getEditParameter(row, col), null);
+                    } else {
+                        RequestURL editAddr = table.getRequestURL();
+                        editAddr.addParameter(table,
+                                              table.getEditParameter(row, col));
+                        AnchorRenderStack.push(editAddr, null, null);
+                    }
+                    pushedURL = true;
+                } 
+		else {
+                    /* 
+		     * .. otherwise show a little edit-icon.
+		     */
+                    RequestURL editAddr = table.getRequestURL();
+                    editAddr.addParameter(table,
+                                          table.getEditParameter(row, col));
+                    %><a href="<%=editAddr.toString()%>"><%
+                    writeIcon(device, editIcon);
+                    %></a>&nbsp;<%
+                }
+            }
+
+            rendererPane.writeComponent(device, comp, table);
+
+            if (pushedURL) {
+                AnchorRenderStack.pop();
+            }
+
+            comp.setStyle(compStyle);
+            %></td>
+<%
+        } else {
+
+
+            if (!isEditingCell && table.isCellEditable(row, col)) {
+                RequestURL editAddr = table.getRequestURL();
+                editAddr.addParameter(table,
+                                      table.getEditParameter(row, col));
+                %> ondblclick="location.href='<%=editAddr.toString()%>';"<%
+            }
+            %>><%
+
+            rendererPane.writeComponent(device, comp, table);
+
+            comp.setStyle(compStyle);
+            %></td>
+<%
+        }
+    }
+
+    protected void writeDefaultFormRowSelection(Device device, STable table, 
+                                                SCellRendererPane rendererPane,
+                                                int row)
+        throws IOException
+    {
+		boolean selected = table.isRowSelected(row);
+		SIcon icn = selected ? table.getSelectedIcon() : table.getDeselectedIcon();
+		
+		%><td><%
+        if (icn != null) {
+        	%><input <%
+        	%>type="image"<%
+        	%><%|src=icn.getURL()%><%
+        	%> name="<%=Utils.event(table)%><%
+        	%>_<%
+        	%><%=table.getToggleSelectionParameter(row,-1)%>"<%
+        }
+        else {
+	        %><input type="hidden"<%
+	        %> name="<%=Utils.event(table)%>"<%
+	        %> value="<%=table.getDeselectionParameter(row,-1)%>"/><%
+	
+        	%><input <%
+        	%><%|checked=(selected ? "checked" : null)%><%
+        	%> type="<%=(table.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION ? "radio" : "checkbox")%>"<%
+        	%> value="<%=table.getToggleSelectionParameter(row,-1)%>"<%
+        	%> name="<%=Utils.event(table)%>"<%
+        }
+        %>></td>
+<%
+    }
+
+    protected void writeRowSelection(Device device, STable table, 
+                                     SCellRendererPane rendererPane,
+                                     int row, int col)
+        throws IOException
+    {
+        STableCellRenderer rowSelectionRenderer = table.getRowSelectionRenderer();
+
+        if (rowSelectionRenderer == null) {
+            if (table.getShowAsFormComponent()) {
+
+                writeDefaultFormRowSelection(device, table, rendererPane, row);
+                return;
+            }
+            rowSelectionRenderer = new org.wings.table.SDefaultTableRowSelectionRenderer();
+        }
+
+        SComponent comp =
+            rowSelectionRenderer.getTableCellRendererComponent(table,
+                                                               table.getToggleSelectionParameter(row, -1),
+                                                               table.isRowSelected(row),
+                                                               row, -1);
+
+        %><td<%
+        %><%|class=(comp!=null)?comp.getStyle():null%><% 
+	String compStyle = comp.getStyle();
+	comp.setStyle(null);
+        %>><%
+        if (comp instanceof ClickableRenderComponent) {
+            if ( table.getShowAsFormComponent() ) {
+                AnchorRenderStack.push(Utils.event(table), table.getToggleSelectionParameter(row, col), null);
+            } else {
+                RequestURL toggleSelectionAddr = table.getRequestURL();
+                toggleSelectionAddr.addParameter(table, table.getToggleSelectionParameter(row, col));
+                AnchorRenderStack.push(toggleSelectionAddr, null, null);
+            }
+        }
+        else {
+            if ( table.getShowAsFormComponent() ) {
+                %><button type="submit" name="<%=table.getEncodedLowLevelEventId()%>" value="<%=table.getToggleSelectionParameter(row, col)%>"><%
+            } else {
+                RequestURL toggleSelectionAddr = table.getRequestURL();
+                toggleSelectionAddr.addParameter(table, table.getToggleSelectionParameter(row, col));
+                %><a href="<%=toggleSelectionAddr.toString()%>"><%
+            }
+        }
+
+        rendererPane.writeComponent(device, comp, table);
+
+        if (comp instanceof ClickableRenderComponent) {
+            AnchorRenderStack.pop();
+        }
+        else {
+            if ( table.getShowAsFormComponent() ) {
+                %></button><%
+            } else {
+                %></a><%
+            }
+        }
+
+        %></td>
+<%
+	comp.setStyle(compStyle);
+    }
+
+    protected void writeHeaderCell(Device device, STable table,
+                                   SCellRendererPane rendererPane,
+                                   int c)
+        throws IOException
+    {
+        SComponent comp = table.prepareHeaderRenderer(c);
+        %><td<%
+        %><%|class=(comp!=null)?comp.getStyle():null%><% 
+	String compStyle = comp.getStyle();
+	comp.setStyle(null);
+        %>><%
+        rendererPane.writeComponent(device, comp, table);
+        %></td>
+<%
+	comp.setStyle(compStyle);
+    }
+
+    protected void writeEmptyHeaderCell(Device device, STable table)
+        throws IOException
+    {
+        %><th>&nbsp;</th>
+<%
+    }
+
+    private void writeIcon(Device device, SIcon icon)
+        throws IOException {
+        %><img<%
+        %><%|src=icon.getURL()%><%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        %>/><%
+    }
+
+    private void writeColSpan(Device device, STable table, int startCol, int endCol) 
+      throws IOException {
+      for (int c = 0; c < table.getColumnCount(); c++) {
+         int idx = table.convertColumnIndexToModel(c);
+         SComponent comp = table.prepareRenderer(table.getCellRenderer(0, idx), 0, idx);
+          %><col style="width:<%
+          if (comp.getPreferredSize() != null) {
+             %><%=comp.getPreferredSize().width%><%
+          } else {
+             int perc=(100/(endCol - startCol));
+             %><%=perc%>%<%
+          };
+          %>"><%
+        }
+    }
+</template>

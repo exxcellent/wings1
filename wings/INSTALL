@@ -1,0 +1,41 @@
+
+wingS demo installation with JServ and Apache under Linux
+
+0) make sure JServ or tomcat is working
+
+1) compile wingS. Make sure, that you have the java servlet classes
+   in your classpath or in the lib/ directory as jar file.
+   You need JSDK 2.2.
+   To compile the wings.jar, just type ant:
+     $ ant
+   compile the demo
+     $ cd demo
+     $ ant
+   This creates the war files.
+   if you have the environment variable $TOMCAT_HOME set, then
+     $ ant deploy
+   will unpack them in your $TOMCAT_HOME/webapps
+
+2) run it - just start you tomcat. Please note the following:
+ 2.1) if you have an JDK older than 1.4, you need to add the logging
+      api to your bootclasspath. So you need to modify your tomcat.sh
+      to include the logging.jar on the commandline
+      (you find in the lib/ directory):
+         -Xbootclasspath/p:/usr/src/wingS-1.0-alpha/lib/logging.jar
+
+  2.2)
+   To determine the size of images, wingS needs access to an Xserver under
+   Unix/Linux (However, it will work without it, but then image tags won't
+   contain width="xx" and height="xx" attributes).
+   There are several possibilities to achive the access to an XServer:
+
+   - xhost:
+     - add "wrapper.env=DISPLAY=localhost:0"
+     - call "xhost +localhost" before starting the httpd server
+
+   - or Xvfb:
+     - add "wrapper.env=DISPLAY=localhost:1"
+     - start Xvfb on display 1 (/usr/X11R6/bin/Xvfb :1 -screen 0 640x480x8 &)
+
+That's it!
+

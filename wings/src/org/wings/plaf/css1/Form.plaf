@@ -1,0 +1,51 @@
+<template name="FormCG" for="org.wings.SForm">
+
+private static final SIcon BLIND_ICON = new SResourceIcon("org/wings/icons/blind.gif");
+
+/*
+ * we render two icons into the page that captures pressing simple 'return'
+ * in the page. Why ? Depending on the Browser, the Browser sends the 
+ * first or the last submit-button it finds in the page as 'default'-Submit
+ * when we simply press 'return' somewhere.
+ *
+ * However, we don't want to have this arbitrary behaviour in wingS.
+ * So we add these two (invisible image-) submit-Buttons, either of it
+ * gets triggered on simple 'return'. No real wingS-Button will then be
+ * triggered but only the ActionListener added to the SForm. So we have 
+ * a way to distinguish between Forms that have been sent as default and
+ * pressed buttons.
+ *
+ * Watchout: the style of these images once had been changed to display:none;
+ * to prevent taking some pixel renderspace. However, display:none; made
+ * the Internet Explorer not accept this as an input getting the default-focus,
+ * so it fell back to the old behaviour. So changed that style to no-padding,
+ * no-margin, no-whatever (HZ).
+ */
+<write>
+<%
+   %><form method="<% 
+   if (component.isPostMethod()) { %>post<% } else { %>get<% }
+   %>"<%
+   %> name="<%=component.getName()%>"<%
+   Utils.writeEvents(device, component);
+   %><%|class=Utils.style(component)%><%
+   %><%|enctype=component.getEncodingType()%><%
+   %><%|action=component.getRequestURL()%><%
+   String returnButtonEvent = "_defaultButton";
+   if (component.getDefaultButton() != null)
+          returnButtonEvent = Utils.event(component.getDefaultButton()); 
+   %>><input type="image" name="<%=returnButtonEvent%>" border="0" <%|src=BLIND_ICON.getURL()
+    %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+    // See Form.js and SForm.getDefaultButton for the reason of this virtual submit button
+    %><input type="image" name="js_submit" border="0" <%|src=BLIND_ICON.getURL()
+    %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+   %><input type="hidden" name="<%=Utils.event(component)%>" value="<%?componentId
+   %><%=org.wings.SConstants.UID_DIVIDER%>" /><%
+     Utils.renderContainer(device, component);
+   %><input type="image" name="<%=returnButtonEvent%>" border="0" <%|src=BLIND_ICON.getURL()
+   %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+
+   %></form><%
+%>
+</write>
+</template>

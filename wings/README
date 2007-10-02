@@ -1,0 +1,25 @@
+
+Requirements:
+-------------
+
+- jdk 1.4 or above
+- it's possible to patch wingS for use with jdk 1.3
+- jsdk 2.2 (tomcat 3.2.1 or above)
+- ant 1.3 or above
+
+Installation:
+-------------
+
+To compile and build the jar file, start 
+
+ant all
+
+in this directory
+
+You find the wings.jar in build/dist/lib
+
+
+- To make the demo-wars look at demo/README
+- To build the tutorial, see doc/tutorial/hellowings/README
+- For a skeleton you can use to start writing your
+  own application, look at doc/tutorial/hellowings/skeleton.

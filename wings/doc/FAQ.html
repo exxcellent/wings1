@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Documentation</title>
+<meta http-equiv="Content-type" content='text/html; charset="iso-8859-1"' />
+<link rel="stylesheet" type="text/css" href="FAQ.css" />
+</head>
+<body>
+
+<p>
+<span class="bigwings">wingS</span>
+<span class="bigis">FAQ</span>
+</p>
+
+<ol>
+
+<li>
+<div class="question">
+What is wingS?
+</div>
+<div class="answer">
+<span class="wings">wingS</span> is net generation Swing. 
+It is build on top of the swing libraries of the
+jdk1.2. I.e. using swing models, swing events and a very similar api. Mainly
+the class names and packages differ ;-) (JTable pendant is STable, JTree pendant
+it STree,...). So if you know how to develop swing apps,
+you are able to develop <span class="wings">wingS</span> apps.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Why should I use <span class="wings">wingS</span>?
+</div>
+<div class="answer">
+Powerful, but easy to use.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+What are the requirements for <span class="wings">wingS</span>?
+</div>
+<div class="answer">
+ <p>
+ for compiling <span class="wings">wingS</span>
+ <ul type="disc">
+  <li>
+   Java 2 with logging API<br />
+   We are using <span class="wings">wingS</span> with 
+   <a href="http://java.sun.com" target="_blank">Sun's JDK 1.4</a>. If
+   you are using another Java 2 implemenation without the logging API, you could
+   use the logging.jar in the lib directory of the 
+   <span class="wings">wingS</span> distribution. See <a href="#jdk1.3">Using
+   wingS with JDK1.3</a>
+  </li>
+<!--  we added it to the repository
+  <li>A copy of JSDK2.2 API jar. You will find it in every servlet container
+  implementing the JSDK2.2 API or on Sun's 
+  <a href="http://java.sun.com/products/servlet/" target="_blank">JSDK website</a>. 
+  Copy it to the lib directory of your <span class="wings">wingS</span> installation.
+  </li>
+-->
+  <li>
+  <a href="http://jakarta.apache.org" target="_blank">Ant</a> version 1.3 or higher.
+  </li>
+ </ul>
+ </p>
+ <p>
+ for running <span class="wings">wingS</span> applications
+ <ul>
+  <li>
+   jsdk2.2 capable servlet container:
+   <ul>
+    <li><a href="http://jakarta.apache.org" target="_blank">tomcat</a> version 3.2 or
+    higher</li>
+    <li><a href="http://jetty.mortbay.org" target="_blank">jetty</a></li>
+    <li><a href="http://www.jboss.org" target="_blank">jboss</a> with jetty/tomcat</li>
+   </ul>
+ </ul>
+ </p>
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+<a name="jdk1.3">Compiling and using <span class="wings">wingS</span> with jdk1.3</a>
+</div>
+<div class="answer">
+<p>
+You need to apply some patches to compile <span class="wings">wingS</span> with
+jdk1.3. Start 
+<pre>ant PatchForJDK1.3</pre>
+in the wings directory to apply the patches.
+</p>
+
+<p>
+Compile <span class="wings">wingS</span> with 
+<pre>ant</pre>
+Note: Compiling works without having "logging.jar" in the
+bootclass path.
+</p>
+
+<p>
+Using <span class="wings">wingS</span> with jdk1.3 is not so trivial. You have
+to change your start scripts of your servlet container. Add to the java options
+of your servlet container:
+<pre>-Xbootclasspath/a:logging.jar</pre>
+For example tomcat 4 start script is "catalina.sh". You could set the
+environment variable "JAVA_OPTS" and start tomcat (untested!):
+<pre>
+export JAVA_OPTS="-Xbootclasspath/a:logging.jar"
+catalina.sh run
+</pre>
+
+</p>
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Adding logging support to jdk1.3 forever (without using -Xbootclasspath)
+</div>
+<div class="answer">
+We need to update the rt.jar in jdk's directory
+rt.jar is most possibly in something like jdk1.3/lib or jdk1.3/jre/lib (in case
+of IBM's jdk) now we suggest to copy rt.jar to rt_temp.jar, because you won't be
+able to update it (maybe some VM is running and rt.jar is locked so you will get IOException ).
+Extract logging.jar to the directory where you found rt.jar. 
+<pre>
+jar xf logging.jar
+</pre>
+You will now have a new directory named "java". This is what we need to put in rt_temp.jar. the
+command is :
+<pre>
+jar -uf rt_temp.jar java
+</pre>
+If everything went well, you can switch the rt_temp.jar and rt.jar: 
+rename the rt.jar to rt_old.jar  and rename rt_temp.jar to rt.jar. That's it,
+now you have logging support in your jdk1.3. You can delete the created "java" directory.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Why does <span class="wings">wingS</span> require access to an X Server under
+Unix/Linux? (only if using jdk1.3)
+</div>
+<div class="answer">
+This problem disappears, if wingS is compiled for jdk1.4 (javax.imageio.ImageIO).
+We are using some AWT classes for the icons which enables you to use
+the methods you already know for images manipulation and which loads images from
+file/classpath and calculates the size of images. Unfortunatly as
+soon as you are using AWT classes, the JVM wants to talk to an X Server
+because the AWT uses the system libraries for drawing.<br />
+If you are using GNU/Linux, you can use i.e. Xvfb.<br />
+If you want a quick and insecure solution try "xhost +".
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How can I contribute?
+</div>
+<div class="answer">
+Please send your patches / fixes / extensions to 
+<a href="mailto:wings-developers@wings.to.com">wings-developers@wings.to.com</a>.
+If you like subscribe to our <a href="http://www.wings.to.com/mailinglists.html">mailing
+lists</a>. You can also get write access to our <a href="http://cvs.wings.to.com/">cvs
+repository</a>. Please visit <a href="http://www.wings.to.com/">http://www.wings.to.com/</a>
+for more information!
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How do I create a new servlet using <span class="wings">wingS</span>?
+</div>
+<div class="answer">
+ This is very simple:
+
+ <br/>
+ <pre>
+ import org.wings.*;
+
+ public class HelloWorld {
+   public HelloWorld() {
+     SFrame frame = new SFrame();
+     frame.getContentPane().add(new SLabel("Hello World"));
+     frame.show();
+   }
+ }
+ </pre>
+
+ That's all. To integrate it in a servlet container you need to build a web
+ archive (war file). How to do this, please look at the documentation of your
+ servlet container. You must provide a web.xml file with similar content:
+ <br/>
+ <pre>
+
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd"&gt;
+
+&lt;web-app&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;
+      HelloWorld
+    &lt;/servlet-name&gt;
+    &lt;servlet-class&gt;
+      org.wings.session.WingServlet
+    &lt;/servlet-class&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;wings.mainclass&lt;/param-name&gt;
+      &lt;param-value&gt;HelloWorld&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;wings.lookandfeel.factory&lt;/param-name&gt;
+      &lt;param-value&gt;org.wings.plaf.LookAndFeelFactory$Default&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;wings.lookandfeel.default&lt;/param-name&gt;
+      &lt;param-value&gt;/css1.jar&lt;/param-value&gt;
+    &lt;/init-param&gt;
+  &lt;/servlet&gt;
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;
+      HelloWorld
+    &lt;/servlet-name&gt;
+    &lt;url-pattern&gt;
+      /HelloWorld/*
+    &lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+ </pre>
+
+For more information please look at the 
+<a href="http://wingsdemo.mercatis.de/hellowings/WingSTutorial/" target="_blank">online tutorial</a>,
+which is a part of <span class="wings">wingS</span> (in the docs/tutorial dir) 
+and implemented with <span class="wings">wingS</span>.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+What is this org.wings.session stuff?
+</div>
+<div class="answer">
+wingS consists of 3 layers:
+<ul>
+ <li>a swing like component model</li>
+ <li>the session package</li>
+ <li>the servlet API</li>
+</ul>
+The Session can be compared to java.lang.System. All other classes of this package will not be needed
+in most applications.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+What is a plaf?
+</div>
+<div class="answer">
+<span class="wings">wingS</span> supports some kind of pluggable look and feel. 
+Each SComponent
+delegates it's codegeneration to a special ComponentCG. There are different
+CGs for each SComponent derivate and each plaf. For now, there exists only one plaf, that
+is suitable for the most common browsers. Feel free to implement additional plafs like wap 
+or xml/xsl ;-)
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How can I use another plaf?
+</div>
+<div class="answer">
+A plaf consists of a set of CGs (code generation delegates) and a properties file. There's on
+CG per SComponent derivate. The properties assign the CGs to their components and specify values
+for the component's java-beans-like properties. Different plafs can share CGs. Incomplete plafs
+are also usable (if you need only 5 components in your wap-app, you need to implement only 5
+CGs!). The plaf is bundled as a jar<br />
+To make a plaf be actually utilized, you have to make the LookAndFeelFactory choose it. The default
+implementation of the LookAndFeelFactory reads the resource name of the plaf jar from the servlet
+init parameter "wings.lookandfeel.default".
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How can I write a new plaf?
+</div>
+<div class="answer">
+I suggest, you first copy the most applicable from the existing plafs to a
+new package and then successively implement the CGs for each component
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How can I choose different plafs for different browsers?
+</div>
+<div class="answer">
+The default implementation of the LookAndFeelFactory reads the resource name of the plaf jar from the servlet
+init parameter "wings.lookandfeel.default". Write a more sophisticated one, that evaluates the ServletRequest
+und chooses among several plafs.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Can I change the plaf at runtime?
+</div>
+<div class="answer">
+Yes, that's possible. Plafs are loaded from separate classloaders. Thus even reloading is possible.
+Just call setLookAndFeel on the CGManager. Alternatively, you can replace the CGs of individual components.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+What is a template?
+</div>
+<div class="answer">
+todo
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Where can I find more information about <span class="wings">wingS</span>?
+</div>
+<div class="answer">
+Read the <a href="http://jsp2.java.sun.com/j2se/1.3/docs/api/javax/swing/package-summary.html">javax.swing API docs</a>
+or the <a href="http://java.sun.com/docs/books/tutorial/uiswing/index.html">Java Swing Tutorial</a>
+from <a href="http://www.sun.com/">Sun Microsystems</a> ;-)
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+Filechooser upload isn't working: 
+  java.io.IOException: Datei oder Verzeichnis nicht gefunden
+</div>
+<div class="answer">
+You are using Tomcat 4.0.2 or 4.0.3 (or maybe another version). Tomcat sets the
+system temporary directory to the "temp" below the tomcat directory,
+which does not exist. You can change this "strange" behaviour by setting the environment
+variable CATALINA_TMPDIR to a directory of your choice, or create the "temp"
+directory in your tomcat installation dir.
+</div>
+<br />
+</li>
+
+
+<li>
+<div class="question">
+Why is SOptionPane not blocking on show... methods
+</div>
+<div class="answer">
+<span class="wings">wingS</span> is a single thread application. Each request
+gets it's own thread to process the request. If a method is blocking, the thread
+blocks and <span class="wings">wingS</span> is not able to deliver the result of
+the request. There is no way around that.
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How to use SOptionPane?
+</div>
+<div class="answer">
+SOptionPane does not block on show... methods. However, you can pass an ActionListener, that is
+notified on dismission of the dialog.
+Example: 
+<pre>
+SOptionPane.showYesNoDialog(null, "do you catch it?", "Question?",
+  new  ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      if ( e.getActionCommand()==SOptionPane.NO_ACTION ) {
+        SOptionPane.showMessageDialog(null, "please read explanation again");
+      } else {
+        SOptionPane.showMessageDialog(null, "you are smart ;-)");
+      }
+    }
+  });
+</pre>
+</div>
+<br />
+</li>
+
+<li>
+<div class="question">
+How can I access the session object from another thread. 
+</div>
+<div class="answer">
+If you start a thread, add this thread to the SessionManager with 
+<pre>
+   org.wing.session.SessionManager.setSession(session);
+</pre>
+where session is the session of the parent thread.
+After that have access to the session in the new thread with 
+<pre>
+   org.wing.session.SessionManager.getSession();
+</pre>
+At the end of the thread you should remove the session object from the
+sessionmanager with
+<pre>
+   org.wing.session.SessionManager.removeSession();
+</pre>
+</div>
+<br />
+</li>
+
+
+</ol>
+
+<p><br /></p>
+
+<div align="right">
+<a href="http://validator.w3.org/check/referer">
+<img src="http://validator.w3.org/images/vxhtml10" alt="Valid XHTML 1.0!" border="0" height="31" width="88" />
+</a>
+</div>
+
+</body>
+</html>

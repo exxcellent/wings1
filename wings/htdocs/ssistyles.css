@@ -1,0 +1,176 @@
+BODY {
+   background: #ffffff;
+   padding: 0;
+   margin: 0;
+   border-width: 0
+}
+
+P {
+   font-family: sans-serif;
+   font-size: 10pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077;
+   text-align: left
+}
+
+UL {
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077;
+   text-align: left
+}
+
+B {
+   font-weight: bold
+}
+
+EM {
+   font-style: normal;
+   color: #990000
+}
+
+STRONG {
+   font-weight: bold;
+   color: #990000
+}
+
+SMALL {
+   font-size: 8pt;
+   color: #000077
+}
+
+A:link {
+   color: #000099;
+   text-decoration: none;
+   font-weight: bold
+}
+
+A:active {
+   color: #0000FF;
+   text-decoration: none
+}
+
+A:visited {
+   color: #000077;
+   text-decoration: none
+}
+
+HR {
+   padding-top: 0;
+   padding-bottom: 0
+}
+
+H1 {
+   font-size: 16pt;
+   font-weight: bold;
+   font-family: sans-serif;
+}
+
+H2 {
+   font-size: 14pt;
+   font-weight: bold;
+   font-family: sans-serif;
+}
+
+H3 { 
+   font-size: 12pt;
+   font-weight: bold;
+   font-family: sans-serif
+}
+
+.wings {
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #770000
+}
+
+.is {
+   font-family: sans-serif;
+   font-size: 10pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077
+}
+
+.bigwings {
+   font-family: sans-serif;
+   font-size: 18pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #770000
+}
+
+.bigwingsheader {
+   vertical-align: middle;
+   font-family: sans-serif;
+   font-size: 18pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #ffffff
+}
+
+.bigis {
+   font-family: sans-serif;
+   font-size: 16pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077
+}
+
+.maintable {
+   background: #ffffff;
+   padding: 0pt;
+   margin: 0;
+   font-family: sans-serif;
+   font-size: 10pt;
+   font-weight: bold;
+   font-style: normal;
+   border-width: 0;
+   color: #000000
+}
+
+.mainbody {
+   background: #ffffff;
+   padding: 4pt;
+   margin: 0;
+   font-family: sans-serif;
+   font-size: 10pt;
+   font-weight: bold;
+   font-style: normal;
+   border-width: 0;
+   color: #ffffff
+}
+
+.menu {
+   background: #000077;
+   padding: 4pt;
+   margin: 0;
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: bold;
+   font-style: normal;
+   border-width: 0;
+   color: #ffffff
+}
+
+A:link.menu {
+   color: #ffffff;
+   text-decoration: none;
+   font-weight: bold
+}
+
+A:visited.menu {
+   color: #ffffff;
+   text-decoration: none
+}
+
+A:active.menu {
+   color: #66ffff;
+   text-decoration: none
+}
+

@@ -1,0 +1,79 @@
+<template name="DialogCG" for="org.wings.SDialog" extends="org.wings.plaf.css1.FormCG">
+<property type="SIcon" name="closeIcon">org/wings/icons/close.gif</property>
+<comp-property type="String" name="style">form</comp-property>
+
+private void writeIcon(Device device, SIcon icon) throws IOException {
+        %><img border="0"<%
+        %><%|src=icon.getURL()%><%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        %>/><%
+}
+
+private void writeWindowIcon(Device device, SDialog dialog,
+			     int event, SIcon icon) throws IOException {
+    RequestURL addr = dialog.getRequestURL();
+    addr.addParameter(Utils.event(dialog), event);
+    %><td<%|width=icon.getIconWidth()%> class="framebutton"><a href="<%=addr%>"><%
+    writeIcon(device, icon);
+    %></a></td><%
+}
+
+<write>
+<%
+    final SDialog dialog = (SDialog)component;
+
+    %><table cellpadding="0" cellspacing="0" border="0" width="100%"><%
+
+        int cols = 0;
+        String text = dialog.getTitle();
+        if (text == null)
+            text = "Dialog";
+
+        %><table border="0" width="100%"><tr><%
+        %><td align="center" valign="middle"><%
+        %><table cellpadding="0" cellspacing="0" border="0"<%
+        final SDimension dim = component.getPreferredSize();
+        if (dim != null) {
+            %><%|width=dim.width%><%
+            %><%|height=dim.height%><%
+        }
+        %>><tr><%
+
+        // left icon
+        if (dialog.getIcon() != null) {
+            SIcon icon = dialog.getIcon();
+            %><td<%|width=icon.getIconWidth()%> class="framebutton"><%
+            writeIcon(device, icon);
+            cols ++;
+        }
+
+        String titleStyle = dialog.getTitleStyle();
+        if ( titleStyle == null ) {
+            titleStyle = "frametitle";
+        }
+
+        String contentStyle = dialog.getContentStyle();
+        if ( contentStyle == null ) {
+            contentStyle = "frameborder";
+        }
+
+        %><td class="<%=titleStyle%>">&nbsp;<b><%
+        %><%=text%><%
+        %></b></td><%
+        cols ++;
+
+        if (dialog.isClosable() && closeIcon != null) {
+            writeWindowIcon(device, dialog, 
+		            SInternalFrameEvent.INTERNAL_FRAME_CLOSED, closeIcon);
+            cols ++;
+        }
+
+        %></tr><%
+        %><tr><td colspan="<%=cols%>" class="<%=contentStyle%>"><%
+        super.write(device, component);
+        %></td></tr></table><%
+        %></td></tr></table><%
+%>
+</write>
+</template>

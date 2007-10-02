@@ -1,0 +1,14 @@
+<table border=4>
+<tr>
+<th align=left bgcolor=#CCCCCC>Directory</th>
+<th align=center bgcolor=#CCCCCC>Content <font size=+1>[&nbsp;<object name="currentDir"></object>&nbsp;]</font></th>
+</tr>
+<tr>
+<td align=left valign=top bgcolor=#f0f0ff><object name=DirTree></object></td>
+<td align=right valign=top bgcolor=#f0f0ff><object name=FileTable></object></td>
+</tr>
+<tr>
+<td align=left valign=top bgcolor=#f0f0ff><object name=UploadForm></object></td>
+<td align=center valign=center bgcolor=#f0f0ff><object name=DeleteButton>delete</object></td>
+</tr>
+</table>

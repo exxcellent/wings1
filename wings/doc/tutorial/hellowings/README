@@ -1,0 +1,26 @@
+WingS Tutorial v0.1
+===================
+
+
+Description
+-----------
+The WingS tutorial is a web application to show how to set up and
+run a WingS application.  If installed properly, a servlet container can serve
+slides which describe step by step how to set up, implement, compile and deploy
+a "HelloWingS!" example.
+
+Installation
+------------
+Before installation, you need a working servlet container (eg. http://jakarta.apache.org/tomcat).
+Also you will need a working ANT tool (http://jakarta.apache.org/ant).
+
+
+Build the war-file by typing "ant war" at the command line and execute this.
+
+The resulting "war"-file is placed in the directory "build/packages".
+Copy, link or move this file to your servlet container war application directory and restart your servlet container.
+
+Copyright
+---------
+Copyright 2002 mercatis information system GmbH, Germany
+

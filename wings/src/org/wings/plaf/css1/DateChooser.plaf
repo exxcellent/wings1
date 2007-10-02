@@ -1,0 +1,83 @@
+<template name="DateChooserCG"
+          for="org.wings.SDateChooser">
+
+<import>java.text.*</import>
+<import>java.io.*</import>
+<import>java.util.*</import>
+<import>org.wings.script.*</import>
+<import>org.wings.externalizer.*</import>
+
+public static final JavaScriptListener DATE_CHOOSER_SCRIPT_LOADER =
+	new JavaScriptListener("", "", loadScript());
+/*
+public static final JavaScriptListener SCRIPT_LOADER =
+	new JavaScriptListener("", "", loadScript());
+*/
+
+public static String loadScript() {
+    InputStream in = null;
+    BufferedReader reader = null;
+
+    try {
+        in = MenuCG.class.getClassLoader().getResourceAsStream("org/wings/plaf/css1/DateChooser.js");
+        reader = new BufferedReader(new InputStreamReader(in));
+        StringBuffer buffer = new StringBuffer();
+        String line;
+        while ((line = reader.readLine()) != null)
+            buffer.append(line).append("\n");
+
+        return buffer.toString();
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        return "";
+    } finally {
+        try { in.close(); } catch (Exception ign) {} 
+        try { reader.close(); } catch (Exception ign1) {}
+    }
+}
+
+static final SResourceIcon ICON = new SResourceIcon("org/wings/icons/ArrowDown.gif");
+
+<install>
+        component.addScriptListener(DATE_CHOOSER_SCRIPT_LOADER);
+</install>
+
+
+<uninstall>
+	component.removeScriptListener(DATE_CHOOSER_SCRIPT_LOADER); 
+</uninstall>
+
+<write>
+<%
+    SimpleDateFormat dateFormatter = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.MEDIUM, component.getLocale());
+
+    %><nobr><input type="text" size="11"<%
+    %><%|class=Utils.style(component)%><%
+    if (component.isEnabled()) {
+        %> name="<%=Utils.event(component)%>"<%
+        %> id="<%=component.getComponentId()%>"<%
+    }
+    %><%|tabindex=component.getFocusTraversalIndex()%><%
+    Utils.writeEvents(device, component);
+    try {
+        Date date = component.getDate();
+        if ( date!=null) {
+        %><%|value=dateFormatter.format(date)%>/><%
+        }
+    } catch ( SDateChooser.DateParseException ex ) {
+        %><%|value=ex.getDateString()%>/><%
+    }
+    %><a href="javascript: void(0);"<%
+      %> onmouseover="if (timeoutId) clearTimeout(timeoutId);return true;"<%
+      %> onmouseout="if (timeoutDelay) calendarTimeout();"<%
+      %> onclick="g_Calendar.show(event,<%
+                %>'<%=component.getComponentId()%>',<%
+                %>'<%=dateFormatter.toPattern()%>');<%
+                %>return false;"><%
+      %><img <%|src=ICON.getURL()%><%
+      %><%|width=ICON.getIconWidth()%><%
+      %><%|height=ICON.getIconHeight()%> name="imgCalendar" border="0"></a></nobr><%
+%>
+</write>
+</template>

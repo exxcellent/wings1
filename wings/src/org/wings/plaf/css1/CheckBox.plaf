@@ -1,0 +1,103 @@
+<template name="CheckBoxCG" 
+          for="org.wings.SCheckBox"
+          extends="org.wings.plaf.css1.ButtonCG">
+
+<import>org.wings.script.*</import>
+
+private static final SIcon EMPTY_ICON = new SURLIcon("");
+private static final JavaScriptListener selectListener = new JavaScriptListener(JavaScriptEvent.ON_CHANGE, "submit()");
+
+protected void writeText(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    if (abstractButton.getShowAsFormComponent() )
+        writeFormText(device, abstractButton, attr);
+    else
+        writeAnchorText(device, abstractButton, attr);
+}
+
+protected void writeIcon(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    if (abstractButton.getShowAsFormComponent() )
+        writeFormIcon(device, abstractButton, attr);
+    else
+        writeAnchorIcon(device, abstractButton, attr);
+}
+
+protected SIcon getIcon(SAbstractButton abstractButton) {
+    SIcon icon = super.getIcon(abstractButton);
+
+    if ( icon==null && 
+	 !abstractButton.getShowAsFormComponent() ) {
+	org.wings.plaf.CGManager manager = abstractButton.getSession().getCGManager();
+	// use default icons from CG
+        if ( abstractButton.isSelected() ) {
+            return abstractButton.isEnabled() 
+                   ? (SIcon)manager.getObject("SCheckBox.selectedIcon", SIcon.class)
+                   : (SIcon)manager.getObject("SCheckBox.disabledSelectedIcon", SIcon.class);
+        } else {
+            return abstractButton.isEnabled() 
+                   ? (SIcon)manager.getObject("SCheckBox.icon", SIcon.class)
+                   : (SIcon)manager.getObject("SCheckBox.disabledIcon", SIcon.class);
+        }
+    }
+
+    // fake icon, to force button plaf to render "label for"
+    if ( icon==null )
+	return EMPTY_ICON;
+
+    return icon;		
+}
+
+protected void writeFormIcon(final Device device, SAbstractButton abstractButton, String attr)
+     throws IOException
+{
+    SIcon icon = getIcon(abstractButton);
+    if (icon != EMPTY_ICON)  {
+        super.writeFormIcon(device, abstractButton, attr);
+     	return;
+    }
+
+    // no icon, so render a input component. This is a special case, where we
+    // have to render also a hidden element to indicate a unselect, which is not
+    // transfered in a form. This special case must also be special handeled in
+    // the components event handler code
+
+    %><input type="hidden"<%
+    %> name="<%=Utils.event(abstractButton)%>"<%
+    %> value="hr" /><%
+    
+    %><input type="checkbox"<%
+    %> name="<%=Utils.event(abstractButton)%>"<%
+    %><%|id=abstractButton.getComponentId()%><%
+    %><%|tabindex=abstractButton.getFocusTraversalIndex()%><%
+    %><%|class=attr%><%
+    abstractButton.removeScriptListener(selectListener);
+    if (abstractButton.getActionListeners().length>0) {
+        abstractButton.addScriptListener(selectListener);
+    }
+
+    Utils.writeEvents(device, abstractButton);
+    if ( abstractButton.isSelected() ) {
+	%> checked="1"<%  // ="1" needed for XHTML
+    }
+
+    if ( !abstractButton.isEnabled() ) {
+	%> disabled="1"<% // ="1" needed for XHTML
+    }
+    %>/><%
+}
+
+
+protected boolean renderLayoutWithoutIcon() {
+    return true;
+}
+
+<write>
+<%
+    super.write(device, component);
+%></write>
+
+</template>
+

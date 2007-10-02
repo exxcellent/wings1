@@ -1,0 +1,275 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================= -->
+<!-- Build file                                                              -->
+<!-- ======================================================================= -->
+<project name="hellowings" default="war" basedir=".">
+
+    <!-- Initialize some variables                                          -->
+    <property name="wings.home" value="../../../"/>
+    <property name="wings.lib.dir" value="${wings.home}/dist/lib"/>
+    <property name="ant.home" value="."/>
+    <property name="Name" value="${ant.project.name}"/>
+    <property name="year" value="2002"/>
+    <property name="version" value="0.1"/>
+    <property name="project" value="${ant.project.name}"/>
+    <property name="build.compiler" value="classic"/>
+    <property name="project.dir" value="${basedir}" />
+    <property name="build.dir" value="${project.dir}/build"/>
+    <property name="build.src" value="${build.dir}/src"/>
+    <property name="build.dest" value="${build.dir}/classes"/>
+    <property name="build.dist" value="${build.dir}/dist"/>
+    <property name="src.java.dir" value="${project.dir}/src" />
+    <property name="package.dir" value="${build.dir}/packages"/>
+    <property name="javadoc.dir" value="${build.dir}/javadoc"/>
+    <property name="webapp.dir" value="${build.dir}/webapp"/>
+    <property name="final.name" value="${project}"/>
+    <property name="final.dir" value="${final.name}/"/>
+    <property name="debug" value="on"/>
+    <property name="optimize" value="on"/>
+    <property name="deprecation" value="on"/>
+
+    <path id="hellowings.classpath">
+      <fileset dir="${wings.lib.dir}">
+        <include name="wings.jar"/>
+        <include name="css1.jar"/>
+        <include name="servlet.jar"/>
+      </fileset>
+    </path>
+
+    <target name="env" description="Prints useful build environment values">
+        <echo message="build.compiler = ${build.compiler}"/>
+        <echo message="java.home = ${java.home}"/>
+        <echo message="user.home = ${user.home}"/>
+        <echo message="java.class.path = ${java.class.path}"/>
+        <echo message=""/>
+    </target>
+
+    <target name="checkclasses">
+	<property name="present.ok" value="seems OK" />
+	<property name="present.fail" value="NO ... ERROR" />
+
+	<property name="checkpresent.1" value="${present.fail}" />
+	<available classpathref="hellowings.classpath" property="checkpresent.1" value="${present.ok}" classname="javax.servlet.http.HttpServletRequest"
+/>
+        <echo message="Is the JavaServletExtension present? ${checkpresent.1}" />
+
+        <property name="checkpresent.2" value="${present.fail}" />
+        <available  classpathref="hellowings.classpath"
+        property="checkpresent.2" value="${present.ok}" classname="org.wings.SFrame"/>
+	<echo message="Is WingS (wings.jar) present? ${checkpresent.2}" />
+
+        <property name="checkpresent.3" value="${present.fail}" />
+        <available classpathref="hellowings.classpath" classname="org.wings.plaf.css1.Utils" property="checkpresent.3" value="${present.ok}"/>
+        <echo message="Is WingS (css1.jar) present? ${checkpresent.3}" />
+
+        <property name="checkpresent.4" value="${present.fail}" />
+        <available classname="java.util.logging.Logger" classpathref="hellowings.classpath" property="checkpresent.4" value="${present.ok}"/>
+        <echo message="Is JavaLoggingExtension present? ${checkpresent.4}" />
+    </target>
+
+    <target name="prepare" depends="env" 
+	description="Copies the source code to the build directory with filtering">
+        <filter token="year" value="${year}"/>
+        <filter token="version" value="${version}"/>
+        <filter token="date" value="${TODAY}"/>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dest}"/>
+	<mkdir dir="${build.src}"/>
+
+	<copy todir="${build.src}">
+	  <fileset dir="${src.java.dir}">
+	    <include name="**/*.java" />
+	  </fileset>
+	</copy>
+    </target>
+
+    <target name="compile" depends="prepare,checkclasses"
+	description="Compiles the source directory">
+        <javac srcdir="${build.src}"
+            destdir="${build.dest}"
+            excludes="**/package.html"
+            debug="${debug}"
+            deprecation="${deprecation}"
+            optimize="${optimize}"
+	    classpathref="hellowings.classpath">
+	</javac>
+    </target>
+    
+    <target name="jar" depends="compile"
+	description="Compiles the source directory and creates a .jar file">
+        <jar jarfile="${build.dir}/${final.name}.jar"
+            basedir="${build.dest}"
+            excludes="**/package.html"/>
+    </target>
+    
+    <target name="javadoc" depends="prepare"
+	description="Creates the API documentation">
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc
+            sourcepath="${build.src}"
+            destdir="${javadoc.dir}"
+            author="true"
+            private="true"
+            version="true"
+            use="true"
+            windowtitle="${Name} ${version} API"
+            doctitle="${Name} ${version} API"
+            bottom="Copyright &amp;copy; ${year} mercatis GmbH, Germany. All Rights Reserved."
+	    packagenames="de.*,skeleton.*"
+	    classpathref="hellowings.classpath"
+            >
+    	</javadoc>
+    </target>
+    
+    <target name="skeleton"
+	description="Build the skeleton">
+	<ant antfile="${project.dir}/skeleton/build.xml" 
+             dir="${project.dir}/skeleton" 
+             target="package"
+             inheritAll="false"/>
+    </target>
+
+    <target name="webapp" depends="jar,skeleton"
+	description="Create the webapplication directory">	
+	<delete dir="${build.dir}/webapp" verbose="false" />
+	<mkdir dir="${build.dir}/webapp" />
+	<mkdir dir="${build.dir}/webapp/WEB-INF" />
+	<mkdir dir="${build.dir}/webapp/WEB-INF/lib" />
+        <mkdir dir="${build.dir}/webapp/WEB-INF/classes" />
+	<mkdir dir="${build.dir}/webapp/packages" />
+
+	<copy todir="${build.dir}/webapp">
+	  <fileset dir="webapp">
+	    <include name="**/**" />
+	    <exclude name="**/*.class" />
+	    <exclude name="WEB-INF/classes/**/**" />
+	    <exclude name="WEB-INF/src/**/**" />
+	    <exclude name="**/CVS" />
+	    <exclude name="**/CVS/**" />
+	    <exclude name="**/.*" />
+	    <exclude name="**/*.sh" />
+	    <exclude name="**/*.xsl" />
+	  </fileset>
+        </copy>
+
+	<copy todir="${build.dir}/webapp/packages">
+	  <fileset dir="${project.dir}/skeleton/packages">
+	    <include name="**/*.zip"/>
+	    <include name="**/*.tar.gz"/>
+	    <include name="**/*.tgz"/>
+	  </fileset>
+	</copy>
+
+	<copy file="${build.dir}/${final.name}.jar" 
+	todir="${build.dir}/webapp/WEB-INF/lib"/>
+	<copy todir="${build.dir}/webapp/source">
+	  <fileset dir="${src.java.dir}">
+	    <include name="HelloWingS*.java" />
+	  </fileset>
+	</copy>
+	<copy todir="${build.dir}/webapp/WEB-INF/lib">
+	  <fileset dir="${wings.lib.dir}">
+	    <include name="wings.jar"/>
+	    <include name="css1.jar"/>
+          </fileset>
+        </copy>
+    </target>
+
+    <target name="war" depends="webapp"
+	description="Pack the webapplication">
+	<mkdir dir="${package.dir}"/>
+        <delete file="${package.dir}/${ant.project.name}.war"
+        verbose="false"/>
+        <war warfile="${package.dir}/${final.name}.war" 
+	webxml="${build.dir}/webapp/WEB-INF/web.xml">
+	    <fileset dir="${build.dir}/webapp">
+	         <include name="**/**" />
+		 <exclude name="WEB-INF/web.xml" />
+	    </fileset>
+	</war>
+    </target>
+  
+    <target name="package-prepare" depends="prepare"
+	description="create package structure">
+
+	<delete dir="${build.dist}"/>
+	<mkdir dir="${package.dir}"/>
+	<mkdir dir="${build.dist}"/>
+	<mkdir dir="${build.dist}/${final.name}"/>
+	<copy todir="${build.dist}/${final.name}">
+	    <fileset dir="${project.dir}">
+	         <include name="**/**" />
+	         <exclude name="**/*.class" />
+		 <exclude name="**/CVS" />
+		 <exclude name="**/CVS/**" />
+		 <exclude name="**/.*" />
+		 <exclude name="**/*~" />
+		 <exclude name="**/*.jar" />
+		 <exclude name="**/build/**" />
+		 <exclude name="**/packages/**" />
+		 <exclude name="environment*.sh" />
+	    </fileset>
+	</copy>
+    </target>
+
+    <target name="package-zip" depends="package-prepare"
+	description="Package with zip">
+        <delete file="${package.dir}/${final.name}.zip" verbose="false"/>
+        <zip zipfile="${package.dir}/${final.name}.zip">
+	    <fileset dir="${build.dist}">
+	         <include name="**/**" />
+	    </fileset>
+	</zip>
+    </target>
+  
+    <target name="package-tgz" depends="package-prepare"	
+	description="Packages the distribution with TAR-GZIP">
+        <delete file="${package.dir}/${final.name}.tar" verbose="false"/>
+        <delete file="${package.dir}/${final.name}.tar.gz" verbose="false"/>
+        <tar tarfile="${package.dir}/${final.name}.tar" basedir="${build.dist}" />
+        <gzip zipfile="${package.dir}/${final.name}.tar.gz" 
+	      src="${package.dir}/${final.name}.tar"/>
+    </target>
+    
+    <target name="package-all" depends="war, package-zip,package-tgz"
+	description="packs all forms" />
+
+    <target name="package" depends="war, package-zip,package-tgz"
+	description="packs all forms (equal to package-all)" />
+
+    <target name="clean-package"
+	description="Cleans up the package directory">
+	<delete dir="${package.dir}" />
+    </target>
+
+    <target name="clean-build"
+	description="Cleans up the build directory">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="clean-javadoc"
+	description="Cleans up the javadoc directory">
+        <delete dir="${javadoc.dir}"/>
+    </target>
+
+    <target name="clean-source"
+	description="Cleans up the source directory" >
+        <delete>
+	  <fileset dir="webapp">
+	    <include name="**/*~" />
+	    <include name="**/*.class" />
+	  </fileset>
+	</delete>
+    </target>
+
+    <target name="clean-all" depends="clean-package, clean-build, clean-source, clean-javadoc"
+	description="Cleans up the source directory"/>
+
+    <target name="clean" depends="clean-all"
+	description="Cleans up the source directory (equal to clean-all)"/>
+   
+
+    
+</project>

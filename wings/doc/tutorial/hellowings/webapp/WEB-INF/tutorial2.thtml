@@ -1,0 +1,31 @@
+<h1>Creating a very simple web application</h1>
+<p>You now have a working servlet container where you can install new
+applications. Furthermore we consider "<code>TOMCAT_DIR</code>" as the
+directory where Tomcat was installed.</p>
+<p>In Tomcat all web applications are either defined in the "<code>TOMCAT_DIR/conf/server.xml</code>" as "<code>Context</code>" or are subdirectories of "<code>TOMCAT_DIR/webapps</code>". Our first application will be placed as subdirectory, because it's more simple to install.</p>
+<h2>Creating the application directory</h2>
+<p>Now create a new subdirectory in "<code>TOMCAT_DIR/webapps</code>", let's say "<code>helloWingS</code>" ("<code>mkdir TOMCAT_DIR/webapps/helloWingS</code>").<br/>This subdirectory needs further directories beneath:<ul>
+<li>"<code>TOMCAT_DIR/webapps/helloWingS/WEB-INF</code>": here will be placed a "<code>web.xml</code>" file, describing the application, yet not needed</li>
+<li>"<code>TOMCAT_DIR/webapps/helloWingS/WEB-INF/classes</code>": here we place the Java classfiles</li>
+<li>"<code>TOMCAT_DIR/webapps/helloWingS/WEB-INF/lib</code>": here will the libraries "<code>.jar</code>" placed</li>
+</ul></p>
+<p>In the "<code>TOMCAT_DIR/webapps/helloWingS</code>" directory you should place a simple welcome "<a href="../source/index.html"><code>index.html</code></a>" file. This one is normal HTML.</p>
+<table bgcolor="#D0D0D0"><tr><td><pre>
+<font color="blue">&lt;html&gt;</font>
+&nbsp;&nbsp;<font color="blue">&lt;head&gt;</font>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="blue">&lt;title&gt;</font><font color="green">Hello</font><font color="blue">&lt;/html&gt;</font>
+&nbsp;&nbsp;<font color="blue">&lt;/head&gt;</font>
+&nbsp;&nbsp;<font color="blue">&lt;body&gt;</font>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">First Page</font>
+&nbsp;&nbsp;<font color="blue">&lt;/body&gt;</font>
+<font color="blue">&lt;/html&gt;</font>
+</pre></td></tr></table>
+<h2>HTML serving</h2>
+<p>If you now restart your servlet-container and open the page "<code><a href="http://127.0.0.1:8080/helloWingS">http://127.0.0.1:8080/helloWingS</a></code>" you see a page containing following output:</p>
+<table bgcolor="#D0D0D0">
+  <tr><td><pre>
+First Page
+</pre></td></tr>
+</table>
+<p>If you can't see this page, something is not correctly installed. Check the steps and correct any errors. Maybe a look at the Tomcat log-files would help.</p>
+<p>Otherwise, when everything is correct, you can go on with <object name="nextstep">next page</object>.</p>

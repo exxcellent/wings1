@@ -1,0 +1,350 @@
+<template name="ButtonCG" for="org.wings.SAbstractButton">
+<import>org.wings.script.*</import>
+
+protected void writeText(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    if (abstractButton.getShowAsFormComponent() && abstractButton.isEnabled() )
+        writeFormText(device, abstractButton, attr);
+    else
+        writeAnchorText(device, abstractButton, attr);
+}
+
+protected void writeIcon(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    if (abstractButton.getShowAsFormComponent() && abstractButton.isEnabled() )
+        writeFormIcon(device, abstractButton, attr);
+    else
+        writeAnchorIcon(device, abstractButton, attr);
+}
+
+protected void writeAnchorText(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    String text = abstractButton.getText();
+    if (text == null || text.length() == 0) {
+	return;
+    }
+
+    final boolean enabled = abstractButton.isEnabled() &&	(abstractButton.getGroup()==null || !abstractButton.isSelected());
+    final boolean noBreak = abstractButton.isNoBreak();
+    final AnchorProperties anchorProperties = AnchorRenderStack.get();
+
+    boolean hasAnOnClickListener = false;
+    ScriptListener[] scriptListeners = abstractButton.getScriptListeners();
+    for (int i = 0; i < scriptListeners.length; i++) {
+       if (scriptListeners[i] instanceof org.wings.script.JavaScriptListener) {
+          org.wings.script.JavaScriptListener jsListener = (org.wings.script.JavaScriptListener) scriptListeners[i];
+          if (jsListener.getEvent() != null && jsListener.getEvent().equalsIgnoreCase("onclick"))
+              hasAnOnClickListener = true;
+       }
+    }
+
+    final StringBuffer styleBuffer = new StringBuffer();
+    if (noBreak)
+       styleBuffer.append("white-space: nowrap;");
+
+    if ( enabled )
+    {
+        %><a href="<%
+        writeAnchorAddress(device, abstractButton);
+        %>"<%
+        // If possible, send link as submit request. Otherwise other fields
+        // entered inside a form get lost if pressed on a text link
+        if (abstractButton.getParentForm() != null && !hasAnOnClickListener) {
+             %> onclick="return submitForm(event, '<%=abstractButton.getEncodedLowLevelEventId()%>','<%=abstractButton.getToggleSelectionParameter()%>')" <%
+        }
+	    Utils.writeEvents(device, abstractButton);
+        Utils.writeToolTip(device, abstractButton);
+        %><%|accesskey=abstractButton.getMnemonic()%><%
+        Utils.writeAttributes(styleBuffer, abstractButton);
+    }
+    else if ( anchorProperties!=null ) {
+        if ( anchorProperties.isFormAnchor() && !hasAnOnClickListener) {
+            %><a href="" onclick="return submitForm(event, '<%=anchorProperties.getFormEventName()%>','<%=anchorProperties.getFormEventValue()%>')"<%
+        } else {
+            %><a href="<%=anchorProperties.getURL().toString()%>"<%
+        }
+        Utils.writeToolTip(device, abstractButton);    
+    }
+    else {
+        %><span<%
+    }
+
+    %><%|class=attr%><%
+    %><%|style=styleBuffer.toString()%><%
+    %>><%
+
+    %><%=text%><%
+
+    if ( enabled ) {
+        %></a><%
+    } else if ( anchorProperties!=null ) {
+        %></a><%
+    }
+    else {
+        %></span><%
+    }
+}
+
+protected SIcon getIcon(SAbstractButton abstractButton) {
+    if ( abstractButton.isSelected() ) {
+        return abstractButton.isEnabled()
+	        ? abstractButton.getSelectedIcon()
+		: abstractButton.getDisabledSelectedIcon();
+    } else {
+	return abstractButton.isEnabled()
+	        ? abstractButton.getIcon()
+                : abstractButton.getDisabledIcon();
+    }
+}
+
+protected void writeDynamicIcons(final Device device, SAbstractButton abstractButton, SIcon origIcon,
+				 String iconName, boolean renderNameAttribute)
+     throws IOException
+{
+    StringBuffer  onMouseOver = new StringBuffer();
+    StringBuffer  onMouseOut = new StringBuffer();
+
+    if ( abstractButton.isEnabled() &&
+	(abstractButton.getGroup()==null || !abstractButton.isSelected()) ) {
+       // render rollover
+       SIcon rolloverIcon = abstractButton.getRolloverIcon();
+       SIcon pressedIcon = abstractButton.getPressedIcon();
+
+       if ( rolloverIcon!=null || pressedIcon!=null ) {
+	   if ( renderNameAttribute) {
+	       %> name="<%=iconName%>"<%
+	   } // end of if ()
+
+
+           if ( rolloverIcon!=null ) {
+               onMouseOver.append("if(document.images){this.src='").append(rolloverIcon.getURL()).append("';}");
+               onMouseOut.append("if(document.images){this.src='").append(origIcon.getURL()).append("';}");
+           }
+
+           if ( pressedIcon!=null ) {
+               %> onMousedown="if(document.images){this.src='<%=pressedIcon.getURL()
+               %>';}" onmouseup="if(document.images){this.src='<%=rolloverIcon!=null ? rolloverIcon.getURL() : origIcon.getURL()
+               %>';}"<%
+           }
+        }
+    }
+    Utils.writeToolTip(device, abstractButton);
+}
+
+protected void writeAnchorIcon(final Device device, SAbstractButton abstractButton, String attr)
+     throws IOException
+{
+    SIcon icon = getIcon(abstractButton);
+    if (icon == null) return;
+
+    boolean enabled = abstractButton.isEnabled() &&
+	(abstractButton.getGroup()==null || !abstractButton.isSelected());
+
+
+    final AnchorProperties anchorProperties = AnchorRenderStack.get();
+    boolean eventsWritten = false;
+
+    boolean hasAnOnClickListener = false;
+    ScriptListener[] scriptListeners = abstractButton.getScriptListeners();
+    for (int i = 0; i < scriptListeners.length; i++) {
+       if (scriptListeners[i] instanceof org.wings.script.JavaScriptListener) {
+          org.wings.script.JavaScriptListener jsListener = (org.wings.script.JavaScriptListener) scriptListeners[i];
+          if (jsListener.getEvent() != null && jsListener.getEvent().equalsIgnoreCase("onclick"))
+              hasAnOnClickListener = true;
+       }
+    }
+
+    if ( enabled ) {
+        %><a href="<%writeAnchorAddress(device, abstractButton);%>"<%
+        // If possible, send link as submit request. Otherwise other fields
+        // entered inside a form get lost if pressed on a text link
+        if (abstractButton.getParentForm() != null && !hasAnOnClickListener) {
+             %> onclick="return submitForm(event, '<%=abstractButton.getEncodedLowLevelEventId()%>','<%=abstractButton.getToggleSelectionParameter()%>')" <%
+        }               
+        Utils.writeToolTip(device, abstractButton);
+        %><%|accesskey=abstractButton.getMnemonic()%><%
+        %><%|tabindex=abstractButton.getFocusTraversalIndex()%><%
+        Utils.writeEvents(device, abstractButton);
+        eventsWritten = true;
+
+    }
+    else if ( anchorProperties!=null ) {
+        if ( anchorProperties.isFormAnchor() && !hasAnOnClickListener) {
+            %><a href="" onclick="return submitForm(event, '<%=anchorProperties.getFormEventName()%>','<%=anchorProperties.getFormEventValue()%>')"<%
+        } else {
+            %><a href="<%=anchorProperties.getURL().toString()%>"<%
+        }
+    } else {
+        %><span<%
+    }
+    %><%|class=attr%>><%
+
+    %><img border="0" src="<%
+    %><%=icon.getURL()%>"<%
+    writeDynamicIcons(device, abstractButton, icon, "Icon_" + abstractButton.getComponentId(),true);
+    %><%|width=icon.getIconWidth()%><%
+    %><%|height=icon.getIconHeight()%><%
+    if (!eventsWritten) // avoid that script listener get executed twiced: by clicked a element and img element!
+      Utils.writeEvents(device, abstractButton);
+    Utils.writeToolTip(device, abstractButton);
+    /* Now done via domTT
+    %><%|alt=abstractButton.getToolTipText()%><%*/
+    %> /><%
+
+    if ( enabled ) {
+        %></a><%
+    }
+    else if ( anchorProperties!=null ) {
+        %></a><%
+    }
+    else {
+        %></span><%
+    }
+}
+
+protected void writeAnchorAddress(Device d, SAbstractButton abstractButton)
+    throws IOException
+{
+    RequestURL addr = abstractButton.getRequestURL();
+    addr.addParameter(abstractButton,
+                      abstractButton.getToggleSelectionParameter());
+    addr.write(d);
+}
+
+protected void writeFormText(final Device device, SAbstractButton abstractButton, String attr)
+    throws IOException
+{
+    String text = abstractButton.getText();
+    if ( text == null || text.length() == 0 ) {
+	return;
+    }
+
+    if ( getIcon(abstractButton)!=null ) {
+    %><label for="<%=abstractButton.getComponentId()%>"<%
+    %><%|tabindex=abstractButton.getFocusTraversalIndex()%><%
+    %><%|class=attr%><%
+    Utils.writeEvents(device, abstractButton);
+    %>><%
+    %><%=text%><%
+    %></label><%
+    } else {
+
+    %><input type="<%=abstractButton.getType()%>"<%
+    %> name="<%=Utils.event(abstractButton)%>"<%
+    %><%|tabindex=abstractButton.getFocusTraversalIndex()%><%
+    %><%|accesskey=abstractButton.getMnemonic()%><%
+    %><%|class=attr%><%
+    Utils.writeEvents(device, abstractButton);
+    %> value="<%
+    %><%=text%><%
+    %>"<%
+    if ( !abstractButton.isEnabled() ||
+	 abstractButton.getGroup()!=null && abstractButton.isSelected() ) {
+	%> disabled<%
+    }
+    %>><%
+    }
+}
+
+protected void writeFormIcon(final Device device, SAbstractButton abstractButton, String attr)
+     throws IOException
+{
+    SIcon icon = getIcon(abstractButton);
+    if (icon == null) return;
+
+    %><input type="image" border="0" src="<%
+    %><%=icon.getURL()%>"<%
+    %><%|class=attr%><%
+    %><%|width=icon.getIconWidth()%><%
+    %><%|height=icon.getIconHeight()%><%
+    %><%|name= Utils.event(abstractButton)%><%
+    %><%|id=abstractButton.getComponentId()%><%
+    %><%|accesskey=abstractButton.getMnemonic()%><%
+    %><%|tabindex=abstractButton.getFocusTraversalIndex()%><%
+    writeDynamicIcons(device, abstractButton, icon, abstractButton.getComponentId(),
+		      false);
+    %><%|alt=abstractButton.getToolTipText()%><%
+    Utils.writeEvents(device, abstractButton);
+    %><%|text=abstractButton.getToolTipText()%><%
+    if ( !abstractButton.isEnabled() ||
+	 abstractButton.getGroup()!=null && abstractButton.isSelected() ) {
+	%> disabled<%
+    }
+    %>><%
+}
+
+protected boolean renderLayoutWithoutIcon() {
+    return false;
+}
+
+<write>
+<%
+    String style = component.isSelected() ? Utils.selectionStyle(component) : Utils.style(component);
+
+    SIcon icon = getIcon(component);
+
+    String  text = component.getText();
+    int     horizontalTextPosition = component.getHorizontalTextPosition();
+    int     verticalTextPosition   = component.getVerticalTextPosition();
+
+    if (horizontalTextPosition == NO_ALIGN)
+	horizontalTextPosition = RIGHT;
+    if (verticalTextPosition == NO_ALIGN)
+	verticalTextPosition = CENTER;
+
+    if (icon == null && !renderLayoutWithoutIcon()) {
+         // fixme: this handles only one source of attributes
+         writeText(device, component, style);
+    } else if (text == null || text.length() == 0) {
+         // fixme: this handles only one source of attributes
+         writeIcon(device, component, style);
+    } else {
+
+        // text is "1", icon is "2"
+        byte x1,y1,x2,y2;
+        switch (verticalTextPosition) {
+            case TOP:    y1=0; y2=1; break;
+            case BOTTOM: y1=1; y2=0; break;
+            default:     y1=0; y2=0; break;
+        }
+        switch (horizontalTextPosition) {
+            case LEFT:   x1=0; x2=1; break;
+            case RIGHT:  x1=1; x2=0; break;
+            default:     x1=0; x2=0; break;
+        }
+
+        // now we got a 2x2 matrix, not a 3x3!
+        if (x1+x2+y1+y2 == 0)
+            throw new IllegalStateException(
+                "Come? Vertical and horizontal text-position is CENTER, "
+                + "don't know how to arrange this!");
+
+        // draw it
+        final byte ri_max = y1==y2?(byte)1:(byte)2;
+        final byte ci_max = x1==x2?(byte)1:(byte)2;
+        %><table cellspacing="0" cellpadding="0" border="0"><%
+        for (byte ri=0; ri<ri_max; ++ri) {
+            %><tr><%
+            for (byte ci=0; ci<ci_max; ++ci) {
+                if (horizontalTextPosition == CENTER) {
+                    %><td align="center"><%
+                } else {
+                    %><td><%
+                }
+                if (x1==ci && y1==ri) {
+                    writeText(device, component, style);
+                }
+                else if (x2==ci && y2==ri) {
+                    writeIcon(device, component, style);
+                }
+                %></td><%
+            }
+            %></tr><%
+        }
+        %></table><%
+    }
+%></write>
+</template>

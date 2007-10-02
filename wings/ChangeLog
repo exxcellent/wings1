@@ -1,0 +1,16 @@
+
+1.0
+
+- new SIcon interface; SImageIcon and SURLIcon are implementations of it
+
+- new ExternalizeManager; it now differentiats between externalized objects
+  independent of the session (like static icons etc.) and session specific
+  object
+
+- org.wings.externalizer.ObjectHandler renamed to Externalizer
+
+- much more javadoc documentation
+
+- several other cleanups and fixes
+
+- higlevel events from STree

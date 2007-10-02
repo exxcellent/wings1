@@ -1,0 +1,92 @@
+<!-- -*- html -*- -->
+<template name="InternalFrameCG" for="org.wings.SInternalFrame">
+<comp-property type="String" name="style"></comp-property>
+<property type="SIcon" name="iconifyIcon">org/wings/icons/iconify.gif</property>
+<property type="SIcon" name="deiconifyIcon">org/wings/icons/deiconify.gif</property>
+<property type="SIcon" name="maximizeIcon">org/wings/icons/maximize.gif</property>
+<property type="SIcon" name="unmaximizeIcon">org/wings/icons/unmaximize.gif</property>
+<property type="SIcon" name="closeIcon">org/wings/icons/close.gif</property>
+
+private void writeIcon(Device device, SIcon icon) throws IOException {
+        %><img border="0"<%
+        %><%|src=icon.getURL()%><%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        %>/><%
+}
+
+private void writeWindowIcon(Device device, SInternalFrame frame,
+			     int event, SIcon icon) throws IOException {
+    RequestURL addr = frame.getRequestURL();
+    addr.addParameter(Utils.event(frame), event);
+    %><td<%|width=icon.getIconWidth()%> class="framebutton"><a href="<%=addr%>"><%
+    writeIcon(device, icon);
+    %></a></td><%
+}
+
+<write>
+<%
+    SInternalFrame frame = component;
+    String text = frame.getTitle();
+    int columns = 0;
+    if (text == null) {
+        text = "wingS";
+    }
+
+    %><table cellpadding="0" cellspacing="0" width="100%" style="border: solid 1px"><tr><%
+
+    // left icon
+    if (frame.getIcon() != null) {
+        SIcon icon = frame.getIcon();
+        %><td<%|width=icon.getIconWidth()%> class="framebutton"><%
+        writeIcon(device, icon);
+        %></td><%
+        ++columns;
+    }
+
+    // window main bar (width=480: hack necessary for opera, netscape 4)
+    %><td width="480" class="frametitle">&nbsp;<%=text%></td><%
+    ++columns;
+
+   // optional icons.
+   if (frame.isIconifyable() && !frame.isIconified() && iconifyIcon != null) {
+       writeWindowIcon(device, frame, 
+		       SInternalFrameEvent.INTERNAL_FRAME_ICONIFIED,
+		       iconifyIcon);
+        ++columns;
+   }
+
+   if (frame.isIconified() && deiconifyIcon != null) {
+       writeWindowIcon(device, frame, 
+		       SInternalFrameEvent.INTERNAL_FRAME_DEICONIFIED,
+		       deiconifyIcon);
+        ++columns;
+   }
+   
+   if (frame.isMaximizable() 
+       && !frame.isMaximized() 
+       && !frame.isIconified()
+       && maximizeIcon != null)  {
+       writeWindowIcon(device, frame, 
+		       SInternalFrameEvent.INTERNAL_FRAME_MAXIMIZED,
+		       maximizeIcon);
+       ++columns;
+   }
+
+   if (frame.isClosable() && closeIcon != null) {
+       writeWindowIcon(device, frame, 
+		       SInternalFrameEvent.INTERNAL_FRAME_CLOSED, closeIcon);
+        ++columns;
+   }
+  %></tr><%
+   
+  // write the actual content
+  if (!frame.isIconified()) {
+     %><tr><td colspan="<%=columns%>" class="frameborder"><%
+     Utils.renderContainer(device, frame);
+     %></td></tr><%
+  }
+  %></table><%
+%>
+</write>
+</template>

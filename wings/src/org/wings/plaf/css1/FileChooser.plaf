@@ -1,0 +1,37 @@
+<template name="FileChooserCG" for="org.wings.SFileChooser">
+
+
+<write>
+<%
+    int columns = component.getColumns();
+    /*
+     * for some wierd reason, the 'maxlength' column contains the
+     * maximum content length .. see RFC1867.
+     * .. anyway, all browsers seem to ignore it or worse, render the
+     * file upload unusable (konqueror 2.2.2).
+     */
+    //int maxContent = component.getSession().getMaxContentLength()*1024;
+
+    // maxLength = maxContent removed, since it does not work.
+    %><input type="file"<%
+    Utils.writeEvents(device, component);
+    %><%|size=columns%><%
+    %><%|accept=component.getFileNameFilter()%><%
+    if ( component.isEnabled() ) {
+        %> name="<%=Utils.event(component)%>"<%
+        %> id="<%=component.getComponentId()%>"<%
+    } else {
+	%> readonly="1"<%
+    }
+    %><%|tabindex=component.getFocusTraversalIndex()%><%
+    %><%|class=Utils.style(component)%>/><%
+%>
+</write>
+</template>
+
+
+
+
+
+
+

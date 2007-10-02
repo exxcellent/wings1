@@ -1,0 +1,42 @@
+<template name="MenuBarCG" for="org.wings.SMenuBar">
+<import>org.wings.script.*</import>
+
+<write>
+<%
+        SMenuBar mbar = (SMenuBar)component;
+        int mcount = mbar.getComponentCount();
+        
+        %><table class="menubar" cellspacing="0" cellpadding="0" vspace="0" hspace="0" width="100%"<%
+        %><%|class=Utils.style(component)%>><%
+        %><tr align="left"><%
+
+        /***
+         * Due to the current Opera problems we are switching to the older Menue style
+         * in all other cases we do a normal job
+         ***/
+	 boolean rightAligned = false;
+         for (int i = 0; i < mcount; i++) {
+             if ( mbar.getComponent(i).isVisible() ) {
+                 if ( mbar.getComponent(i).getHorizontalAlignment()==SConstants.RIGHT_ALIGN &&
+                      !rightAligned ) {
+                     %><td width="100%"></td><%
+                     rightAligned = true;
+                 }
+                 %><td id="<%=mbar.getComponent(i).getComponentId() + "_hook"%>" class="menu"<%
+                 if ( mbar.getComponent(i).isEnabled() &&
+                      mbar.getComponent(i) instanceof SMenuItem ) {
+                     %> onMouseOver="Menu.prototype.setMouseOverStyle(this)"<%
+                     %> onMouseOut="Menu.prototype.setMouseOutStyle(this)"<%
+                 }
+                 %>><%
+                 mbar.getComponent(i).write(device);
+                 %></td><%
+             }
+         }
+         if ( !rightAligned ) {
+	     %><td width="100%">&nbsp;</td><%
+         }
+         %></tr></table><%
+%>
+</write>
+</template>

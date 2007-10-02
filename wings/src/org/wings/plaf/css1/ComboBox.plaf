@@ -1,0 +1,120 @@
+<template name="ComboBoxCG" for="org.wings.SComboBox">
+
+<comp-property name="renderer" type="org.wings.SDefaultListCellRenderer">
+   new org.wings.SDefaultListCellRenderer()
+</comp-property>
+
+<import>org.wings.script.*</import>
+<install>
+  
+</install>
+
+private static final JavaScriptListener submitListener = new JavaScriptListener(JavaScriptEvent.ON_CHANGE, "commandlessSubmitForm(event)");
+
+protected void writeFormComboBox(Device device, SComboBox comboBox) throws IOException {
+    %><select size="1"<%
+    %><%|class=Utils.style(comboBox)%><%
+    %><%|name=Utils.event(comboBox)%><%
+    %><%|id=comboBox.getComponentId()%><%
+    %><%|style=comboBox.getPreferredSize()%><%
+    %><%|tabindex=comboBox.getFocusTraversalIndex()%><%
+	if ( !comboBox.isEnabled() ) {
+	    %> disabled="1"<% // ="1" needed for XHTML
+    }
+
+    comboBox.removeScriptListener(submitListener);
+    if (comboBox.getActionListeners().length>0) {
+        comboBox.addScriptListener(submitListener);
+    }
+
+	Utils.writeEvents(device, comboBox);
+    %>><%
+
+    javax.swing.ComboBoxModel model = comboBox.getModel();
+    int size = model.getSize();
+    int selected = comboBox.getSelectedIndex();
+
+    SListCellRenderer renderer = comboBox.getRenderer();
+
+    for (int i=0; i < size; i++) {
+        SComponent cellRenderer = null;
+        if (renderer != null) {
+            cellRenderer = renderer.getListCellRendererComponent(comboBox, model.getElementAt(i), false, i);
+        } else {
+            %><!--renderer==null--><%
+        }
+
+        %>
+<option<%|value=comboBox.getSelectionParameter(i)%><%
+
+        if (selected == i) {
+            %> selected="selected"<%
+        }
+
+        if (cellRenderer!=null) {
+            Utils.writeToolTip(device, cellRenderer);
+
+            org.wings.io.StringBufferDevice stringBufferDevice = getStringBufferDevice();
+            org.wings.plaf.xhtml.Utils.writeAttributes(stringBufferDevice, cellRenderer);
+            String styleString = stringBufferDevice.toString();
+            if ( styleString!=null && styleString.length()>0) {
+                %> style="<%=styleString%>"<%
+            }
+        }
+        %>><%
+				
+	    if (cellRenderer != null) {
+	        // Hack: remove all tags, because in form selections, looks ugly.
+	        org.wings.io.StringBufferDevice string = getStringBufferDevice();
+	        cellRenderer.write(string);
+	        char[] chars = string.toString().toCharArray();
+	        int pos = 0;
+	        for (int c=0; c < chars.length; c++) {
+	             switch (chars[c]) {
+	             case '<':
+	                 device.print(chars, pos, c - pos);
+	                 break;
+	             case '>':
+	                 pos = c+1;
+                 }
+	        }
+	        device.print(chars, pos, chars.length - pos);
+	     } else {
+             %><!--cellrenderer==null, use toString--><%
+	     device.print(model.getElementAt(i).toString());
+        }
+        %></option><%
+    }
+
+    %>
+</select><%
+
+    // util method
+    %><input type="hidden"<%
+    %><%|name=Utils.event(comboBox)%><%
+    %><%|value=-1%><%
+    %>/><%
+}
+
+private org.wings.io.StringBufferDevice stringBufferDevice = null;
+
+protected org.wings.io.StringBufferDevice getStringBufferDevice() {
+    if (stringBufferDevice == null) {
+        stringBufferDevice = new org.wings.io.StringBufferDevice();
+    }
+    stringBufferDevice.reset();
+    return stringBufferDevice;
+}
+
+<write>
+<%
+    SComboBox comboBox = (SComboBox)component;
+    // TODO: implement anchor combobox
+    //if (comboBox.getShowAsFormComponent()) {
+        writeFormComboBox(device, comboBox);
+    //} else {
+    //    writeAnchorComboBox(device, comboBox);
+    // }
+%>
+</write>
+</template>

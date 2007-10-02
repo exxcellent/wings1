@@ -1,0 +1,26 @@
+<h1>Overview</h1>
+<p>This tutorial describes, how to write and install a simple WingS-application.</p>
+<p>It consists of seven tabs (excluding this).</p>
+<ul>
+<li><b>Requirements</b><br/>What do you need before you
+can setup any application. It is described how you install Java
+and Tomcat.</li>
+<li><b>Simple Serving</b><br/>How do you install a very simple, only
+".html"-files serving container and how to test it.</li>
+<li><b>Code</b><br/>The code of the simple HelloWingSServlet.</li>
+<li><b>Compile</b><br/>What libraries are necessary and how do you
+compile your own classes.</li>
+<li><b>web.xml</b><br/>What is to be done, to let the container serve
+the servlet.</li>
+<li><b>Test</b><br/>How to test your WingS-application. And an
+outlook.</li>
+<li><b>AppSkeleton</b><br/>A complete Skeleton application, which you
+can download and edit. Has build script and everything is documentated.</li>
+</ul>
+<p>Now get started with the <object name="nextstep">next step</object>.</p>
+
+
+
+
+
+

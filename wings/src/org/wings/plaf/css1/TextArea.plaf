@@ -1,0 +1,50 @@
+<template name="TextAreaCG" for="org.wings.STextArea">
+<write>
+<%
+    if (!component.isEditable() && (component.getLineWrap() == STextArea.NO_WRAP) && (component.getColumns() == 0) && (component.getRows() == 0)) {
+        String text = component.getText();
+        String style = Utils.style(component);
+        if (style != null) {
+            %><span class="<%=style%>"><%
+        }
+        if (text != null) {
+                %><nobr><%
+                org.wings.plaf.compiler.Utils.writeQuoted(device,text,true);    /* Write new text */
+                %></nobr><%
+        }
+        
+        if (style != null) {
+            %></span><%
+        }
+
+    } else {
+        SDimension dim = component.getPreferredSize();
+        %><textarea<%
+        %><%|class=Utils.style(component)%><%
+        Utils.writeEvents(device, component);
+        %><%|tabindex=component.getFocusTraversalIndex()%><%
+        %><%|cols=component.getColumns()%><%
+        %><%|rows=component.getRows()%><%
+            if (dim != null) {
+                    %> style="<%=dim.toString()%>;" <%
+            }
+        if (!component.isEditable()) { %> readonly="1"<% }
+        if (component.isEnabled())   { 
+           %> name="<%=Utils.event(component)%>"<% 
+           %> id="<%=component.getComponentId()%>"<%    
+        }  else { 
+           %> disabled="1"<% 
+        } 
+
+        switch (component.getLineWrap()) {
+            case STextArea.VIRTUAL_WRAP : %> wrap="virtual"<%  break;
+            case STextArea.PHYSICAL_WRAP: %> wrap="physical"<% break;
+        }
+        Utils.writeEvents(device, component);
+        %>><%
+        org.wings.plaf.compiler.Utils.writeQuoted(device, component.getText());
+        %></textarea><%
+    }
+%>
+</write>
+</template>

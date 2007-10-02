@@ -1,0 +1,311 @@
+<!-- -*- html -*- 
+ $Id$
+-->
+<template name="JSTreeCG" for="org.wings.STree">
+
+<import>java.io.*</import>
+<import>javax.swing.tree.*</import>
+<import>org.wings.tree.*</import>
+<import>org.wings.script.*</import>
+
+
+<property type="SIcon" name="expandControlIcon">org/wings/icons/plus.gif</property>
+<property type="SIcon" name="collapseControlIcon">org/wings/icons/minus.gif</property>
+<property type="SIcon" name="hashMark">org/wings/icons/TreeLine.gif</property>
+<property type="SIcon" name="emptyFillIcon">org/wings/icons/transdot.gif</property>
+
+<comp-property type="org.wings.tree.STreeCellRenderer" name="cellRenderer">new org.wings.tree.SDefaultTreeCellRenderer()</comp-property>
+<comp-property type="String" name="selectionStyle">treenodeselection</comp-property>
+
+
+public static final JavaScriptListener SCRIPT_LOADER =
+	new JavaScriptListener("", "", loadScript());
+
+public static String loadScript() {
+    InputStream in = null;
+    BufferedReader reader = null;
+    try {
+        in = JSTreeCG.class.getClassLoader().getResourceAsStream("org/wings/plaf/css1/Tree.js");
+        reader = new BufferedReader(new InputStreamReader(in));
+        StringBuffer buffer = new StringBuffer();
+        String line;
+        while ((line = reader.readLine()) != null)
+            buffer.append(line).append("\n");
+            buffer.append(line).append("\n");
+
+        return buffer.toString();
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        return "";
+    } finally {
+        try { in.close(); } catch (Exception ign) {} 
+        try { reader.close(); } catch (Exception ign1) {}
+    }
+}
+
+<install>
+        component.addScriptListener(SCRIPT_LOADER);
+</install>
+
+<uninstall>
+        component.removeScriptListener(SCRIPT_LOADER);
+</uninstall>
+
+private void writeTreeNode(STree tree, Device device, Object[] path, int depth,
+                           String treeId, int maxDepth, int row) throws IOException {
+
+    final String nodeId = treeId + Integer.toString(row);
+    final Object node = path[depth];
+    final TreePath treePath = new MyTreePath(path,depth+1);
+
+    final int nodeIndentDepth = tree.getNodeIndentDepth();
+
+    final STreeCellRenderer cellRenderer = tree.getCellRenderer();
+
+    final boolean isLeaf = tree.getModel().isLeaf(node);
+    final boolean isExpanded = tree.isExpanded(treePath);
+    final boolean isSelected = tree.isPathSelected(treePath);
+
+    final boolean isSelectable = (tree.getSelectionModel() != SDefaultTreeSelectionModel.NO_SELECTION_MODEL);
+
+    SComponent cellComp = cellRenderer.getTreeCellRendererComponent(tree, node,
+                                                                    isSelected,
+                                                                    isExpanded,
+                                                                    isLeaf, row,
+                                                                    false);
+
+    %><tr id="<%=nodeId%>"><%
+
+    /*
+     * fill the indented area.
+     */
+    for (int i=0; i<depth; ++i) {
+        %><td<%
+        if ( hashMark!=null && !isLastChild(tree.getModel(), treePath, i) ) {
+            %> style="background-image:url(<%
+  	        %><%=hashMark.getURL()%><%
+	        %>)"<%
+        }
+        %>><%
+        writeIcon(device, emptyFillIcon, nodeIndentDepth, 1);
+        %></td><%
+    }
+
+    /*
+     * now, write the tree.
+     */
+    %><td<%
+    if ( maxDepth != depth ) {
+        %><%|colspan=maxDepth - depth + 1%><%
+    }
+    %>><%
+
+    if ( !isLeaf ) {
+        %><table cellspacing="0"><tr><td><%
+        /*
+         * write expansion control (the [-] or [+] thingies)
+         */
+        %><a href="javascript:TREE_NODES['<%=nodeId%>'].toggleExpansion()"><%
+
+        if (isExpanded) {
+            writeIcon(device, collapseControlIcon, true, nodeId + "_icon");
+        } 
+        else {
+            writeIcon(device, expandControlIcon, true, nodeId + "_icon");
+        }
+        %></a><%
+        %></td><td><%
+    }
+
+    SCellRendererPane rendererPane = tree.getCellRendererPane();
+    if ( isSelectable ) {
+        // ask the tree for the URL it has for expansion events
+        RequestURL selectionAddr = new RequestURL();
+        selectionAddr.setResource("javascript:TREE_NODES['" + nodeId + "'].toggleSelection()");
+            
+        if ( cellComp instanceof ClickableRenderComponent ) {
+            AnchorRenderStack.push(selectionAddr, null, null);
+            rendererPane.writeComponent(device, cellComp, tree);
+            AnchorRenderStack.pop();
+        } 
+        else {
+            /*
+             * if it is not a ClickableRenderTree, then surround it 
+             * with <a href=".."></a> and hope for the best...
+             */
+            %><a href="<%=selectionAddr.toString()%>"><%
+            rendererPane.writeComponent(device, cellComp, tree);
+            %></a><%
+        }
+    } 
+    else {
+        rendererPane.writeComponent(device, cellComp, tree);
+    }
+
+    if ( !isLeaf ) {
+        %></td></tr></table><%
+    }
+
+    // finalize row. add newline.
+        %></td><td width="100%"></td></tr>
+<%
+}
+
+private void writeScriptNode(STree tree, Device device,
+                               Object[] path, String treeId, 
+                               int depth, ScriptResult result) throws IOException {
+
+    final String nodeId = treeId + Integer.toString(result.row);
+    final TreeModel model = tree.getModel();
+    final Object node = path[depth];
+    final String isExpanded = tree.isExpanded(new MyTreePath(path,depth+1)) ? "true" : "false";
+
+%>TREE_NODES["<%=nodeId%>"] = new TreeNode("<%=nodeId%>", <%=isExpanded%>,"<%=tree.getSelectionParameter(result.row, true)%>","<%=tree.getExpansionParameter(result.row, true)%>");
+<%
+
+    result.row++;
+
+    // model tree rekursiv...
+    for ( int i=0; i<model.getChildCount(node); i++ ) {
+        path[depth+1] = model.getChild(node, i);
+        writeScriptNode(tree, device, path, treeId, depth+1, result);
+        %>TREE_NODES["<%=nodeId%>"].addChild(TREE_NODES["<%=result.nodeId%>"]);
+<%
+    }
+
+    result.nodeId = nodeId;
+}
+
+
+private int writeSubTree(STree tree, Device device, Object[] path, int depth, 
+                          String treeId, int maxDepth, int row) throws IOException {
+
+    final TreeModel model = tree.getModel();
+    final Object node = path[depth];
+
+    if ( tree.isRootVisible() || 
+         node!=model.getRoot() ) {
+        writeTreeNode(tree, device, path, depth, treeId, maxDepth, row);
+    }
+
+    depth++;
+    row++;
+
+    // model tree rekursiv...
+    for ( int i=0; i<model.getChildCount(node); i++ ) {
+        path[depth] = model.getChild(node, i);
+        row = writeSubTree(tree, device, path, depth, treeId, maxDepth, row);
+    }
+
+    return row;
+}
+
+
+
+<write>
+<%
+	
+  int maxDepth = getMaxDepth(component);
+
+  %><table border="0" cellpadding="0" cellspacing="0"<%
+  %><%|id=component.getComponentId()%><%
+  final SDimension dim = component.getPreferredSize();
+  if (dim != null) {
+      %><%|width=dim.width%><%
+      %><%|height=dim.height%><%
+  }
+  %><%|class=Utils.style(component)%><%
+  %>>
+<%
+
+  Object[] path = new Object[maxDepth+1];
+  path[0] = component.getModel().getRoot();
+  writeSubTree(component, device, path, 0,
+	       component.getComponentId() + "_", maxDepth, 0);
+
+  // expandable last row to fit preferred table size on IE
+  %>
+<tr><td width="100%"<%
+  %><%|colspan=maxDepth+2%><%
+  %>>&nbsp;</td></tr></table><%
+
+  %>
+  <script language="JavaScript" type="text/javascript">
+  <%
+      path[0] = component.getModel().getRoot();
+      ScriptResult result = new ScriptResult();
+      writeScriptNode(component, device, path,component.getComponentId() + "_", 0, result);
+
+  %>var tree_<%=component.getComponentId()%> = new Tree("<%=component.getComponentId()%>","<%=Utils.event(component)%>","<%=expandControlIcon.getURL()%>","<%=collapseControlIcon.getURL()%>", "<%=component.getRequestURL()%>", TREE_NODES["<%=result.nodeId%>"]);
+
+TREE_NODES["<%=result.nodeId%>"].expand();
+  </script>
+  <%
+
+%></write>
+
+
+  private final int getMaxDepth(TreeModel model, Object node) {
+      if ( model.isLeaf(node) ) {
+          return 1;
+      } else { 
+          int max = 0;
+          for ( int i=0; i<model.getChildCount(node); i++ ) {
+              max = Math.max(getMaxDepth(model, model.getChild(node, i)), max);
+          }
+          return max+1;
+      }
+  }
+
+  private final int getMaxDepth(STree tree) {
+      return getMaxDepth(tree.getModel(), tree.getModel().getRoot()) - (tree.isRootVisible() ? 1 : 0);
+  }
+
+  private final boolean isLastChild(TreeModel model, TreePath path, int i) {
+      Object node = path.getPathComponent(i);
+      if (i == 0)
+          return true;
+      Object parent = path.getPathComponent(i-1);
+
+      return node == model.getChild(parent,model.getChildCount(parent)-1);
+  }
+
+
+  private void writeIcon(Device device, SIcon icon, int width, int height) throws IOException {
+      if ( icon!=null ) {
+          %><img<%
+          %><%|src=icon.getURL()%><%
+          %><%|width=width%><%
+          %><%|height=height%><%
+          %>/><%
+      }
+  }
+
+  private void writeIcon(Device device, SIcon icon, boolean nullBorder, String id) throws IOException {
+       if (icon != null) {
+           %><img<%
+           if (nullBorder) {
+               %> border="0"<%
+           }
+           %><%|id=id%><%
+           %><%|src=icon.getURL()%><%
+           %><%|width=icon.getIconWidth()%><%
+           %><%|height=icon.getIconHeight()%><%
+           %>/><%
+       }
+  }
+
+  protected static class MyTreePath extends TreePath {
+      public MyTreePath(Object[] path, int length) {
+          super(path, length);
+      }
+  }
+
+  protected static class ScriptResult {
+      String nodeId;
+      int row = 0;
+  }
+
+</template>
+

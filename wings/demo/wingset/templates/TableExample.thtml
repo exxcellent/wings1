@@ -1,0 +1,22 @@
+
+<table cellspacing="3">
+<tr>
+<td>
+<h3>A table with multiple selection and editing enabled</h3>
+<object name="MultiSelectionTable"></object>
+
+<br/>
+
+<h3>A table with single selection and editing enabled</h3>
+<object name="SingleSelectionTable"></object>
+
+</td>
+
+<td>
+<h3>A table without selection and editing disabled</h3>
+<object name="ReadOnlyTable"></object>
+</td>
+
+</tr>
+
+</table>

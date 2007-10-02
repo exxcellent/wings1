@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>WingS</title>
+</head>
+<body bgcolor="#adbcf3">
+
+Table of Contents. Please complete if you remember something, that needs
+coverage.
+
+<h3>Technical Documentation</h3>
+<ul>
+<li>Overview
+  <ul>
+  <li>WingServlet - SessionServlet</li>
+  <li>Components - rendering via plafs</li>
+  <li>Output - Device</li>
+  </ul></li>
+
+<li>Event Handling
+  <ul>
+  <li>Overview - from the pressed button to the invocation of the Action Listener</li>
+  <li>Event encoding</li>
+  <li>Event decoding: the RequestListener interfacy</li>
+  <li>Type of events (primary, intermediate, final)</li>
+  <li>Primary Event Sources
+    <ul>
+      <li>Form Elements - Buttons, TextFields ...</li>
+      <li>The Form itself</li>
+      <li>Anchor based event sources (AnchorButton)</li>
+    </ul></li>
+  </ul></li>
+
+<li>Externalizing
+  <ul>
+  <li>Resources</li>
+  <li>Static Resources
+    <ul>
+    <li>ResourceImageIcon (ClassPathResource)</li>
+    </ul></li>
+  <li>Dynamic Resources
+     <ul>
+     <li>Code Resource (DynamicCodeResource.java)
+       <ul>
+       <li>Frame is toplevel for a Dynamic code resource</li>
+       </ul></li>
+
+     <li>Style Sheet   (style/DynamicStyleSheetResource.java)</li>
+     <li>Script</li>
+     </ul></li>
+  <li>System Externalizer</li>
+  </ul></li>
+
+<li>Epochs
+  <ul>
+  <li>What are Epochs</li>
+  <li>Epochs in Dynamic Resources</li>
+  <li>Epochs in Events</li>
+  <li>Loading changed resources (Reload Manager)</li>
+  </ul></li>
+
+<li>Look and Feel
+  <ul>
+  <li>Separating component state from rendering
+     <ul>
+       <li>Different output options (HTML, XML.. PDF)</li>
+       <li>changing plafs on the fly</li>
+     </ul></li>
+  
+  <li>Plaf code [write(Device, SComponent)]</li>
+  <li>Configuration - default.css, default.properties</li>
+  <li>Plaf compiler for JSP like plafs
+    <ul>
+    <li>Syntax</li>
+    <li>Properties</li>
+    <li>Plaf IDE (wingx)</li>
+    </ul></li>
+  </ul></li>
+
+<li>Special HTML handling as opposed to real time graphics.
+  <ul>
+  <li>Clickable Render Component
+    <ul>
+    <li>used in STree</li>
+    <li>.. in STable</li>
+    </ul></li>
+  <li>...</li>
+  </ul></li>
+</ul>
+
+<h1>WingS Documentation</h1>
+This will contain an overview of the whole lot of documentation resources
+available. Like a tutorial, the code description, flow of events etc.
+<p>
+Explain goals (what else?)
+<ul>
+  <li>Be as compatible with swing as possible</li>
+  <li>Small code size</li>
+  <li>Be not dependent on JavaScript</li>
+  <li>Do not require cookies</li>
+  <li>...</li>
+</ul>
+<p>
+<b>once.</b>
+<p>
+Currently, we have only some incomplete document about
+<a href="DynamicResources.html">Dynamic Resources</a> available.
+<hr noshade="1" size="1">
+$Id$
+</html>

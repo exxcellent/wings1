@@ -1,0 +1,35 @@
+// $Revision$
+- documentation
+- undo-redo (back-forward support for browser)
+- developers guide
+- asynchronous event handling for components (Holger)
+- tutorial article for iX, c't magazin
+- wings logo
+
+(esp. for the pre-1.0-cleanup)
+* docs
+
+* are sessions serializable ?
+
+* SWindow      -> use technique from frames.
+
+* website: make links to WingSet example and Explorer example (without
+  write-access). Visualize the links to the examples as iconized screenshots
+  .. this animates people to click (like the icons in freshmeat).
+  Provide download-links for the war-files so that people
+  can check it out immediately 'at home' without compiling first. When they're
+  interested they will come back to download the source for sure.
+
+* Jump to current position in window. This as such is not very possible with
+  HTML but a near approximation would be to create an <a name="current">
+  at the component that last fired an event, and create URLs, that jump
+  to '#current'. Some effort has to be done, so that we can avoid this
+  part, as it increases the page size (two characters per HRef-Button
+  and action-URL '#c' .. this is _way_ to much). Is it possible to go 
+  to some <a name=..> with JavaScript ? If we enable it only when frames
+  are active, then we only need this '#current' sub-part of the URL once
+  in the loading frame - much easier (and, in fact, this is often needed for
+  this kind of application; consider two frames, one of it showing a tree,
+  that needs scrolling - if we unfold a subtree, then we need to scroll to
+  that position).
+

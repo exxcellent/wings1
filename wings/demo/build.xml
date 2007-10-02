@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<!-- ant build file for wingS Demos-->
+<!-- $Id$ -->
+
+<project name="wingS-Demo" default="main" basedir=".">
+    <property environment="env"/>
+    <!-- read custom properties from file -->
+    <property file="custom-build.properties"/>
+    <property file="build.properties"/>
+
+    <!-- directories -->
+    <property name="build" value="build"/>
+    <property name="build.class" value="${build}/class"/>
+    <property name="build.etc" value="${build}/etc"/>
+    <property name="dist" value="dist"/>
+    <property name="dist.deploy" value="${dist}/deploy"/>
+
+    <path id="build.classpath">
+        <pathelement path="${java.class.path}/"/>
+        <fileset dir="../dist/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="../lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <fileset dir="../dist/lib" id="wings.jar">
+        <include name="wings.jar"/>
+    </fileset>
+    <fileset dir="../lib" id="regexp.jar">
+        <include name="jakarta-regexp-*.jar"/>
+    </fileset>
+
+    <fileset dir="../lib" id="jlfgr.jar">
+        <include name="jlfgr-*.jar"/>
+    </fileset>
+
+    <fileset dir="../lib" id="bsh.jar">
+        <include name="bsh-*.jar"/>
+    </fileset>
+
+    <!-- ==================== Preparations ==================== -->
+
+    <target name="prepare">
+        <tstamp/>
+        <mkdir dir="lib"/>
+        <mkdir dir="${build}"/>
+        <mkdir dir="${build.class}"/>
+        <mkdir dir="${build.etc}"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${dist.deploy}"/>
+
+        <!--ant antfile="build.xml" dir=".."/-->
+    </target>
+
+
+    <!-- ==================== Build wingS Demos ================ -->
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+            destdir="${build.class}"
+            debug="${build.debug}"
+            deprecation="${build.deprecation}"
+            source="1.4" target="1.4">
+            <classpath refid="build.classpath"/>
+        </javac>
+    </target>
+
+    <target name="wingset" depends="compile">
+        <war warfile="${dist.deploy}/wingset.war"
+            webxml="wingset/wingset.xml">
+            <lib refid="wings.jar"/>
+            <lib refid="regexp.jar"/>
+            <lib refid="jlfgr.jar"/>
+            <lib refid="bsh.jar"/>
+            <lib dir="../dist/lib">
+                <include name="css1.jar"/>
+            </lib>
+            <classes dir="${build.class}">
+                <include name="wingset/**"/>
+            </classes>
+            <classes dir=".">
+                <include name="wingset/icons/*.gif"/>
+                <include name="wingset/icons/*.jpg"/>
+                <include name="wingset/icons/*.jpeg"/>
+                <include name="wingset/templates/*.thtml"/>
+                <include name="wingset/css/*.css"/>
+            </classes>
+            <fileset dir="wingset">
+                <include name="index.html"/>
+            </fileset>
+            <fileset dir="wingset">
+                <include name="*.java"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="ldap" depends="compile">
+        <touch file="ldap.properties"/>
+        <filter filtersfile="ldap.properties"/>
+        <copy toFile="${build.etc}/ldap.xml"
+            file="ldap/ldap.xml"
+            filtering="true"/>
+
+        <war warfile="${dist.deploy}/ldap.war"
+            webxml="${build.etc}/ldap.xml">
+            <lib refid="wings.jar"/>
+            <lib refid="regexp.jar"/>
+            <classes dir="${build.class}">
+                <include name="ldap/**"/>
+            </classes>
+            <classes dir=".">
+                <include name="ldap/editors/*.properties"/>
+                <include name="ldap/images/*.gif"/>
+                <include name="ldap/*.jpg"/>
+                <include name="ldap/*.properties"/>
+                <include name="ldap/ldapclientlayout.html"/>
+            </classes>
+            <fileset dir="ldap">
+                <include name="index.html"/>
+            </fileset>
+            <fileset dir="ldap">
+                <include name="*.java"/>
+            </fileset>
+            <fileset dir="../dist/lib">
+                <include name="css1.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+
+    <target name="explorer" depends="compile">
+        <war warfile="${dist.deploy}/explorer.war"
+            webxml="explorer/explorer.xml">
+            <lib refid="wings.jar"/>
+            <lib refid="regexp.jar"/>
+            <classes dir="${build.class}">
+                <include name="explorer/**"/>
+            </classes>
+            <classes dir=".">
+                <include name="explorer/*.gif"/>
+                <include name="explorer/*.thtml"/>
+            </classes>
+            <fileset dir="explorer">
+                <include name="index.html"/>
+            </fileset>
+            <fileset dir="explorer">
+                <include name="*.java"/>
+            </fileset>
+            <fileset dir="../dist/lib">
+                <include name="css1.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+
+    <target name="frameset" depends="compile">
+        <war warfile="${dist.deploy}/frameset.war"
+            webxml="frameset/frameset.xml">
+            <lib refid="wings.jar"/>
+            <lib refid="regexp.jar"/>
+            <classes dir="${build.class}">
+                <include name="frameset/**"/>
+            </classes>
+            <fileset dir="frameset">
+                <include name="index.html"/>
+            </fileset>
+            <fileset dir="frameset">
+                <include name="*.java"/>
+            </fileset>
+            <fileset dir="../dist/lib">
+                <include name="css1.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+
+    <target name="desktop" depends="compile">
+        <war warfile="${dist.deploy}/desktop.war"
+            webxml="desktop/desktop.xml">
+            <lib refid="wings.jar"/>
+            <lib refid="regexp.jar"/>
+            <classes dir="${build.class}">
+                <include name="desktop/**"/>
+            </classes>
+            <classes dir=".">
+                <include name="desktop/*.png"/>
+                <include name="desktop/*.thtml"/>
+                <include name="desktop/*.js"/>
+            </classes>
+            <fileset dir="desktop">
+                <include name="index.html"/>
+            </fileset>
+            <fileset dir="desktop">
+                <include name="*.java"/>
+            </fileset>
+            <fileset dir="../dist/lib">
+                <include name="css1.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="check-deploydir" unless="webapps.deploydir">
+        <fail message="webapps.deploydir must be set"/>
+    </target>
+
+    <target name="deploy.wingset" depends="wingset" if="deploy.wingset">
+        <mkdir dir="${webapps.deploydir}/wingset"/>
+        <unwar src="${dist.deploy}/wingset.war" dest="${webapps.deploydir}/wingset"/>
+        <touch file="${webapps.deploydir}/wingset/WEB-INF/web.xml"/>
+    </target>
+
+    <target name="deploy.ldap" depends="ldap" if="deploy.ldap">
+        <mkdir dir="${webapps.deploydir}/ldap"/>
+        <unwar src="${dist.deploy}/ldap.war" dest="${webapps.deploydir}/ldap"/>
+        <touch file="${webapps.deploydir}/ldap/WEB-INF/web.xml"/>
+    </target>
+
+    <target name="deploy.explorer" depends="explorer" if="deploy.explorer">
+        <mkdir dir="${webapps.deploydir}/explorer"/>
+        <unwar src="${dist.deploy}/explorer.war" dest="${webapps.deploydir}/explorer"/>
+        <touch file="${webapps.deploydir}/explorer/WEB-INF/web.xml"/>
+    </target>
+
+    <target name="deploy.frameset" depends="frameset" if="deploy.frameset">
+        <mkdir dir="${webapps.deploydir}/frameset"/>
+        <unwar src="${dist.deploy}/frameset.war" dest="${webapps.deploydir}/frameset"/>
+        <touch file="${webapps.deploydir}/frameset/WEB-INF/web.xml"/>
+    </target>
+
+    <target name="deploy.desktop" depends="desktop" if="deploy.desktop">
+        <mkdir dir="${webapps.deploydir}/desktop"/>
+        <unwar src="${dist.deploy}/desktop.war" dest="${webapps.deploydir}/desktop"/>
+        <touch file="${webapps.deploydir}/desktop/WEB-INF/web.xml"/>
+    </target>
+
+    <!-- ==================== Admin ==================== -->
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${deploy}"/>
+    </target>
+
+    <target name="cleansource">
+        <delete>
+            <fileset dir="${src}">
+                <include name="**/*.class"/>
+                <include name="**/*.u"/>
+                <include name="**/*~"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="build" depends="wingset,ldap,explorer,frameset,desktop"/>
+    <target name="deploy" depends="check-deploydir,deploy.wingset,deploy.ldap,deploy.explorer,deploy.frameset,deploy.desktop"/>
+
+    <target name="all" depends="clean,build"/>
+    <target name="main" depends="build"/>
+</project>

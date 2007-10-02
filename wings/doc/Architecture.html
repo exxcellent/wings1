@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>wingS Architecture</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+<h1>wingS Architecture</h1>
+
+<h2>Overview</h2>
+<p>
+WingS is a servlet development framework. It uses the models, events and event
+listeners from Swing. Most Swing components have a wingS pendant with a similar
+API and behaviour. Like in Swing, the components are arranged in a hierarchy of
+containers, whose root container is hooked to a frame. WingS consists of three
+layers:
+</p>
+
+<ul>
+  <li>Swing like component model</li>
+  <li>wingS Session</li>
+  <li>Servlet API</li>
+</ul>
+
+<p>
+Figure 1 shows the basic architecture of wingS. The wingS application
+development happens in the upper layer and is very similar to the application
+development with Swing. All modern concepts, like MVC, events and listeners and
+highlevel components are available. Porting of simple Swing applications to
+wingS is a job of a few minutes. Ideally it does not take more than replacing
+'J's with 'S's: JTree -> STree, JMenu -> SMenu, ...
+</p>
+
+<img src="Architecture.png" caption="Figure 1: Overview"/>
+
+<p>
+There's one Session instance per HTTPSession. The Session can be conceptionally
+compared to java.lang.System. The Session is the bridge between the component
+model and the standard servlet API. It aggregates the Dispatcher, that delivers
+low level events to the components and the Externalizer, that makes resources
+available via HTTP. The Dispatcher is related to the HttpServletRequest, whereas
+the Externalizer delivers resources through the HttpServletResponse.
+
+The session state is spreaded over the components and their models. A request
+might lead to state transitions of some components and thus invalidate the
+containing resources.
+</p>
+
+<h2>Event Model</h2>
+<p>
+The parameters of a HttpServletRequest are considered low level events. A low
+level event has a name, that consists of the target component's id and an epoch.
+The epoch allows the dispatcher to determine, if the event originated from a
+current page or from a cached page (back button) or reload request. Only current
+events are delivered to their target components. Outdated events are ignored.
+In the process of delivery, some components might adapt their state. After all
+low level events have been delivered, each component gets the chance to fire
+high level events. It's the component's job to react on the low level event. The
+text field will store the parameter value as its text property and fire
+TextEvents. The button will ignore the parameter value and fire ActionEvents.
+</p>
+
+<p>
+The following code snippet shows how events are encoded in html:
+</p>
+
+<pre>
+   &lt;input type="text" name="epoch_id" value="some text"/&gt;
+</pre>
+<pre>
+   &lt;a href="_resource?epoch_id=_id"&gt;button&lt;/a&gt;
+</pre>
+
+<p>
+The url of the anchor contains three units of information:
+</p>
+
+<ul>
+  <li>resource - id of the target resource</li>
+  <li>epoch - epoch of the frame</li>
+  <li>id - the id of the component</li>
+</ul>
+
+
+<h2>Externalization</h2>
+<p>
+If a resource (icon, HTML page, style sheet, ...) should be accessible to the
+client, it has to be "externalized". That means: the resource has to be
+registered at the ExternalizeManager under a resource identifier. There is one
+global ExternalizeManager per servlet and another one per session. Every
+ExternalizeManager holds a map, that maps resource identifiers to resources.
+The id can be coded into an URL, that is placed somewhere in the html code or
+javascript code. When the browser requests that URL, the WingServlet or
+SessionServlet passes the id to its ExternalizeManager. An
+<code>org.wings.externalizer.Externalizer</code> handles the marshalling of the
+resource. There are different externalizers for different resources. Beyound
+that, resources are divided into dynamic and static resources. The following
+table shows some of them:
+</p>
+<table border="1">
+  <tr>
+    <th>Externalizer</th>
+    <th>DynamicResource</th>
+    <th>StaticResource</th>
+    <th>StyleSheet</th>
+    <th>Text</th>
+    <th>Image</th>
+  </tr>
+  <tr>
+    <th>supported classes</th>
+    <td>DynamicResource<br/>
+        DynamicCodeResource<br/>
+        DynamicScriptResource<br/>
+        DynamicStyleSheetResource</td>
+    <td>StaticResource<br/>
+        ClassPathResource<br/>
+        FileResource<br/>
+        ResourceImageIcon</td>
+    <td>StyleSheet</td>
+    <td>String</td>
+    <td>ImageIcon</td>
+  </tr>
+</table>
+<p>
+Static resources keep their URL as long as they exist. Dynamic resources have an
+epoch counter, that is incremented on every change (->invalidation) and thus
+alter their URL. This prevents proxies and browsers from caching them. An
+externalized resource has one of the following scopes / flags:
+</p>
+<dl>
+  <dt>REQUEST</dt>
+  <dd>the resource is removed from the externalize manager after one
+      request</dd>
+  <dt>FINAL</dt>
+  <dd>the expired date header is set to a big value, thus the
+      resource will be cached</dd>
+  <dt>SESSION</dt>
+  <dd>the resource is only available to requests within the session. The object
+      is not accessible anymore after the session is destroyed (it is garbage
+      collected after the session is garbage collected)</dd>
+  <dt>GLOBAL</dt>
+  <dd>the resource is available to all requests. It is never garbage collected
+      and available over the lifecycle of the servlet container</dd>
+</dl>
+
+<h2>Pluggable Look And Feel</h2>
+<p>
+Today's browser landscape is scattered with incomplete and buggy implementations
+of loose specifications and recommendations of the W3C. The same HTML code looks
+different on different browser's vendors and versions.
+</p>
+
+<p>
+wingS addresses this problem with a concept similar to Swing's pluggable look
+and feel. A LookAndFeel consists of a CG for every component and a properties
+file, that maps CG classes to component classes. Each component delegates its
+rendering task to a special CG (code generator). The LookAndFeelFactory chooses
+a LookAndFeel on session initialization. The decision might be based on the
+browser identification. The LookAndFeel can be replaced / reloaded on the fly.
+It's not obligatory, that a LookAndFeel generates HTML code. Also WML or even
+PDF are possible.
+</p>
+</body>
+</html>

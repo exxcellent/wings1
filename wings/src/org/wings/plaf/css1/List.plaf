@@ -1,0 +1,224 @@
+<template name="ListCG" for="org.wings.SList">
+
+<import>org.wings.script.*</import>
+
+<comp-property name="cellRenderer" type="org.wings.SDefaultListCellRenderer">
+   new org.wings.SDefaultListCellRenderer()
+</comp-property>
+
+<comp-property type="String" name="style">list</comp-property>
+<comp-property type="String" name="selectionStyle">listselection</comp-property>
+
+private static final JavaScriptListener selectListener = new JavaScriptListener(JavaScriptEvent.ON_CHANGE, "commandlessSubmitForm(event)");
+
+protected void writeFormList(Device device, SList list) throws IOException {
+    %><select<%
+    if (list.getPreferredSize() != null) {
+        %><%|style=list.getPreferredSize().toString()%><%
+    }
+    %><%|class=Utils.style(list)%><%
+    %><%|name= Utils.event(list)%><%
+    %><%|size=list.getVisibleRowCount()%><%
+    %><%|tabindex=list.getFocusTraversalIndex()%><%
+    %><%|multiple=(list.getSelectionMode() == SConstants.MULTIPLE_SELECTION) ? "multiple" : null%><%
+    if ( !list.isEnabled() ) {
+        %> disabled="1"<% // ="1" needed for XHTML
+    }
+
+    list.removeScriptListener(selectListener);
+    if (list.getListSelectionListeners().length>0) {
+        list.addScriptListener(selectListener);
+    }
+
+    Utils.writeEvents(device, list);
+    %>><%
+
+    javax.swing.ListModel model = list.getModel();
+    int size = model.getSize();
+
+    SListCellRenderer cellRenderer = list.getCellRenderer();
+
+    for (int i=0; i < size; i++) {
+        SComponent renderer = null;
+        if (cellRenderer != null) {
+            renderer = cellRenderer.getListCellRendererComponent(list, model.getElementAt(i), false, i);
+        }
+
+        %>
+<option<%
+        %><%|value=list.getSelectionParameter(i)%><%
+
+        if (list.isSelectedIndex(i)) {
+            %> selected="selected"<%
+        }
+        if (renderer!=null) {
+            Utils.writeToolTip(device, renderer);
+
+            org.wings.io.StringBufferDevice stringBufferDevice = getStringBufferDevice();
+            org.wings.plaf.xhtml.Utils.writeAttributes(stringBufferDevice, renderer);
+            String styleString = stringBufferDevice.toString();
+            if ( styleString!=null && styleString.length()>0) {
+                %> style="<%=styleString%>"<%
+            }
+        }
+        %>><%
+
+        if (renderer != null) {
+            // Hack: remove all tags, because in form selections, looks ugly.
+            org.wings.io.StringBufferDevice string = getStringBufferDevice();
+            renderer.write(string);
+            char[] chars = string.toString().toCharArray();
+            int pos = 0;
+            for (int c=0; c < chars.length; c++) {
+                 switch (chars[c]) {
+                 case '<':
+                     device.print(chars, pos, c - pos);
+                     break;
+                 case '>':
+                     pos = c+1;
+                 }
+            } 
+            device.print(chars, pos, chars.length - pos);
+        } else {
+                device.print(model.getElementAt(i).toString());
+        }
+        %></option><%
+    }
+
+    %></select><%
+
+    // util method
+    %><input type="hidden"<%
+    %><%|name= Utils.event(list)%><%
+    %><%|value=-1%><%
+    %>/><%
+}
+
+private org.wings.io.StringBufferDevice stringBufferDevice = null;
+
+protected org.wings.io.StringBufferDevice getStringBufferDevice() {
+    if (stringBufferDevice == null) {
+        stringBufferDevice = new org.wings.io.StringBufferDevice();
+    }
+    stringBufferDevice.reset();
+    return stringBufferDevice;
+}
+
+    public void writeAnchorList(Device device, SList list)
+        throws IOException
+    {
+    // Anchor stack should be cleared, because the List renders the Anchor!
+    // don't forget to set it in a finally clause to the old value
+    Object renderStack = AnchorRenderStack.clear();
+
+    try {
+    String style = Utils.style(list);
+    String selectionStyle = Utils.selectionStyle(list);
+        boolean renderSelection = list.getSelectionMode() != SConstants.NO_SELECTION;
+        String orderType = list.getOrderType();
+
+        %><<%=list.getType()%><%
+        %><%|class=style%><%
+        %><%|type=list.getOrderType()%><%
+        %><%|start=list.getStart()%><%
+        %>><%
+
+        javax.swing.ListModel model = list.getModel();
+        int size = model.getSize();
+        SListCellRenderer cellRenderer = list.getCellRenderer();
+
+        SCellRendererPane rendererPane = list.getCellRendererPane();
+
+        int start = 0;
+        int end = model.getSize();
+
+        java.awt.Rectangle viewport = list.getViewportSize();
+        if ( viewport != null) {
+            start = viewport.y;
+            end = start+viewport.height;
+        }
+
+        for (int i=start; i < end; i++) {
+            Object o = model.getElementAt(i);
+            boolean selected = list.isSelectedIndex(i);
+
+            if (renderSelection && selected) {
+                %><li<%
+                %><%|class=selectionStyle%>><%
+            }
+            else {
+                %><li><%
+            }
+
+            SComponent renderer = cellRenderer.getListCellRendererComponent(list,
+                                                                            model.getElementAt(i),
+                                                                            selected,
+                                                                            i);
+
+            if ( renderSelection ) {
+               RequestURL selectionAddr = list.getRequestURL();
+               selectionAddr.addParameter(Utils.event(list),
+                                          list.getToggleSelectionParameter(i));
+
+       if ( renderer instanceof ClickableRenderComponent ) {
+           if ( list.getShowAsFormComponent() ) {
+                AnchorRenderStack.push(Utils.event(list), 
+                             list.getToggleSelectionParameter(i),
+			     null);
+           } else {
+                AnchorRenderStack.push(selectionAddr, null, null);
+           }
+            rendererPane.writeComponent(device, renderer, list);
+                  AnchorRenderStack.pop();
+               }
+               else {
+             /*
+           * if it is not a ClickableRenderComponent, then surround it with
+           * <a href=".."></a> and hope for the best...
+           */
+           %><a href="<%
+           %><%=selectionAddr.toString()%>"<%
+                   if (selected) {
+                       %><%|class=selectionStyle%>><%
+                   }
+                   else {
+               %>><%
+                   }
+                   rendererPane.writeComponent(device, renderer, list);
+                   %></a><%
+       }
+            } else {
+        rendererPane.writeComponent(device, renderer, list);
+            }
+
+            %></li><%
+        }
+
+        %></<%=list.getType()%>><%
+       }  finally {
+        AnchorRenderStack.set(renderStack);
+       }
+    }
+
+<write>
+<%
+    final AnchorProperties anchor = AnchorRenderStack.get();
+
+    if ( anchor!=null ) {
+        if ( anchor.isFormAnchor() ) {
+            %><a href="" onclick="return submitForm(event, '<%=anchor.getFormEventName()%>','<%=anchor.getFormEventValue()%>')"<%
+        } else {
+            %><a href="<%=anchor.getURL().toString()%>"<%
+        }
+        Utils.writeToolTip(device, component);
+    }
+
+    SList list = (SList)component;
+    if (list.getShowAsFormComponent()) {
+        writeFormList(device, list);
+    } else {
+        writeAnchorList(device, list);
+    }
+%>
+</write>
+</template>

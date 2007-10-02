@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>Dynamic Resources</title>
+</head>
+<body bgcolor="#adbcf3">
+<h1 align=center>Dynamic Resources</h1>
+<h3>Introduction</h3>
+WingS handles GUI components, that are rendered via a GUI description language
+(HTML, Stylesheets) that is transferred to a client (browser). 
+The server and the client are typically separated by a network link with
+finite speed, therefore the communication between the client and the server
+should be minimized.
+<p>
+The following techniques are commonly used to address this problem:
+ <ul>
+  <li><em>Server:</em> Send only changes.<br>
+      The server must determine, if and what has changed since
+      the last dowload of the client and send only changes. 
+      <br><b>Example:</b> If an web-application
+      has more than one HTML-frame, it makes sense to send only frames to the
+      client whose content actually have changed.</li>
+  <li><em>Client:</em> Caching.<br>
+      The client gets information from the server about the timeframe of
+      validity of a resource, and stores it locally for that timeframe.
+      <br><b>Example:</b> An icon, that is used in several buttons
+      or labels, and does not change, can be cached for the entire lifetime
+      of the session.</li>
+  <li>And, of course, minimize the size of the pages to be sent in the
+      parts that can be influenced (like length of unique identifiers etc.)
+      </li>
+ </ul>
+<p>
+WingS tries to maximize the transfer speed by utilizing all of the techniques
+above.
+
+<h3>Requirements</h3>
+<h4>Changed Component Sending</h4>
+  reload (code,style,script) ; invalidation of frames.
+
+<h4>Events</h4>
+ event - encoding (small page); events should only be fired, if they come
+ from a current page (events from an outdated page - version,epoch);
+ 
+
+<h3>Implementation</h3>
+
+<hr noshade="1" size="1">
+$Id$
+</html>

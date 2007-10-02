@@ -1,0 +1,232 @@
+<template name="FrameCG" for="org.wings.SFrame">
+<import>java.util.*</import>
+<import>org.wings.header.*</import>
+<import>org.wings.script.*</import>
+<import>java.text.*</import>
+<import>java.io.*</import>
+<import>org.wings.externalizer.*</import>
+
+/* The IE "browser" renders web pages differently (bigger fonts, etc. 
+ * if the HTML has a valid XML declaration header vs. if none. 
+ * Property enables to beautify pages. 
+ */
+<property type="Boolean" name="renderXmlDeclaration">Boolean.TRUE</property>
+<property type="String"  name="documentType"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"></property>
+
+
+public static final JavaScriptListener FORM_SCRIPT_LOADER =
+	new JavaScriptListener("", "", loadScript("org/wings/plaf/css1/Form.js"));
+
+public static final JavaScriptListener DOMLIB_SCRIPT_LOADER =
+	new JavaScriptListener("", "", loadScript("org/wings/plaf/css1/domLib.js"));
+
+public static final JavaScriptListener DOMTT_SCRIPT_LOADER =
+        new JavaScriptListener("", "", loadScript("org/wings/plaf/css1/domTT.js"));
+
+public static String loadScript(String resource) {
+    InputStream in = null;
+    BufferedReader reader = null;
+    try {
+        in = MenuCG.class.getClassLoader().getResourceAsStream(resource);
+        reader = new BufferedReader(new InputStreamReader(in));
+        StringBuffer buffer = new StringBuffer();
+        String line;
+        while ((line = reader.readLine()) != null)
+            buffer.append(line).append("\n");
+            buffer.append(line).append("\n");
+
+        return buffer.toString();
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        return "";
+    } finally {
+        try { in.close(); } catch (Exception ign) {} 
+        try { reader.close(); } catch (Exception ign1) {}
+    }
+}
+
+
+static final SResourceIcon ICON = new SResourceIcon("org/wings/icons/ArrowDown.gif");
+
+
+<install>
+        DynamicCodeResource dynamicCodeRessource;
+        DynamicStyleSheetResource styleSheetResource;
+        DynamicScriptResource scriptResource;
+        Link stylesheetLink;
+        Script scriptLink;
+        Link staticCgSytles;
+
+        // dynamic code resource.
+        dynamicCodeRessource = new DynamicCodeResource(component);
+        component.addDynamicResource(dynamicCodeRessource);
+
+        // dynamic stylesheet resource.
+	styleSheetResource = new DynamicStyleSheetResource(component);
+	stylesheetLink = new Link("stylesheet", null,
+                                     "text/css", null,
+                                     styleSheetResource);
+        component.addDynamicResource(styleSheetResource);
+	component.addHeader(stylesheetLink);
+
+        // dynamic java script resource.
+	scriptResource = new DynamicScriptResource(component);
+        component.addDynamicResource(scriptResource);
+
+	scriptLink = new Script("JavaScript", "text/javascript", scriptResource);
+        component.addHeader(scriptLink);
+
+        // static stylesheet, coming with the CG
+        CGManager cgManager = component.getSession().getCGManager();
+        StaticResource staticResource = (StaticResource)cgManager
+            .getObject("lookandfeel.stylesheet", Resource.class);
+        staticResource.setMimeType("text/css");
+	staticCgSytles = new Link("stylesheet", null,
+                                     "text/css", null,
+                                     staticResource);
+
+        component.getHeaders().add(0, staticCgSytles);
+
+        /* component.addScriptListener(DATE_CHOOSER_SCRIPT_LOADER); */
+        component.addScriptListener(DOMTT_SCRIPT_LOADER);
+        component.addScriptListener(DOMLIB_SCRIPT_LOADER);
+        component.addScriptListener(FORM_SCRIPT_LOADER);
+        
+
+
+</install>
+
+<uninstall>
+	component.removeDynamicResource(DynamicCodeResource.class);
+	component.removeDynamicResource(DynamicStyleSheetResource.class);
+	component.removeDynamicResource(DynamicScriptResource.class);
+/*	component.removeScriptListener(DATE_CHOOSER_SCRIPT_LOADER); */
+        component.removeScriptListener(DOMLIB_SCRIPT_LOADER);
+	component.removeScriptListener(FORM_SCRIPT_LOADER);
+        component.removeScriptListener(DOMTT_SCRIPT_LOADER);
+	component.clearHeaders();
+</uninstall>
+
+<write>
+<%
+
+    org.wings.session.Browser browser = SessionManager.getSession().getUserAgent();
+
+    SFrame frame = (SFrame)component;
+    try {
+        String language = SessionManager.getSession().getLocale().getLanguage();
+        String title = frame.getTitle();
+        List headers = frame.getHeaders();
+        String encoding = SessionManager.getSession().getCharacterEncoding();
+
+
+    if (  "MSIE".equals(browser.getBrowserName()) &&
+         browser.getMajorVersion()<4 ) {
+        %><html>
+<%
+    } else {
+        if (renderXmlDeclaration == null || renderXmlDeclaration.booleanValue()) {
+           %><?xml version="1.0" encoding="<%=encoding%>"?>
+<%
+        }
+
+        %><%#documentType%>
+<%
+
+        %><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=language%>" lang="<%=language%>">
+<%
+    }
+
+        %><head><%
+        if (title != null) {
+            %><title><%=title%></title>
+<%
+        }
+        
+        if (frame.isNoCaching()) { 
+           %><meta http-equiv="cache-control" content="no-cache"/><%
+           %><meta http-equiv="expires" content="0"/><%
+        }
+
+        if (frame.getBaseTarget() != null) {
+            %><base target="<%=frame.getBaseTarget()%>"/>
+<%
+        }
+
+%>
+<style type="text/css">
+<%
+if ( frame.getBackground()!=null || frame.getForeground()!=null ) {
+%>    body { <%
+       if ( frame.getBackground()!=null ) {
+           %>background-color:#<%=org.wings.plaf.xhtml.css1.Utils.toColorString(frame.getBackground())%>;<%
+       }
+       if ( frame.getForeground()!=null ) {
+           %>color:#<%=org.wings.plaf.xhtml.css1.Utils.toColorString(frame.getForeground())%>;<%
+       }
+%>
+    }<%
+}
+if ( frame.getLinkColor()!=null ) {
+%>    a:link { color:#<%=org.wings.plaf.xhtml.css1.Utils.toColorString(frame.getLinkColor())%>; }
+<%
+}
+if ( frame.getVLinkColor()!=null ) {
+%>    a:visited { color:#<%=org.wings.plaf.xhtml.css1.Utils.toColorString(frame.getVLinkColor())%>; }
+<%
+}
+if ( frame.getALinkColor()!=null ) {
+%>    a:active { color:#<%=org.wings.plaf.xhtml.css1.Utils.toColorString(frame.getALinkColor())%>; }
+<%
+}
+%>
+</style>
+
+        <meta http-equiv="Content-type" content="text/html; charset=<%=encoding%>"/>
+<%
+        Iterator it = headers.iterator();
+        while (it.hasNext()) {
+            Object next = it.next();
+            if (next instanceof Renderable) {
+                ((Renderable)next).write(device);
+             } else {
+                %><%=next.toString()%><%
+            }
+            %>
+<%
+        }
+
+    SToolTipManager toolTipManager = frame.getSession().getToolTipManager();
+    String followMouse = "";
+    if ( toolTipManager.isFollowMouse() ) {
+        followMouse = ", 'trail', true";
+    }
+%>
+<script type="text/javascript">
+    domTT_addPredefined('default', 'caption', false <%=followMouse%>, 'delay', <%=toolTipManager.getInitialDelay()%>, 'lifetime', <%=toolTipManager.getDismissDelay()%>);
+</script>
+
+        </head>
+<%
+
+        %><body scroll="auto"<%
+        %><%|class=Utils.style(frame)%><%
+	Utils.writeEvents(device, frame);
+	%><%|bgcolor=frame.getBackground()%><%
+        %>>
+<%
+
+        if (frame.isVisible()) {
+            frame.getLayout().write(device);
+        }
+
+        %></body></html><%
+    }
+    finally {
+        // cleanup, in case someone didn't do this correctly.
+        AnchorRenderStack.reset();
+    }
+%>
+</write>
+</template>

@@ -1,0 +1,27 @@
+<template name="AnchorCG" for="org.wings.SAnchor">
+<comp-property type="String" name="style">anchor</comp-property>
+
+<write><%
+    String style = Utils.style(component);
+    if (style != null || component.getScriptListeners().length != 0) {
+        %><span<%
+        %><%|class=style%><%
+        Utils.writeEvents(device, component);
+        %>><%
+    }
+
+    try {
+        AnchorRenderStack.push(component.getURL(), 
+	                       component.getTarget(),
+			       component.getToolTipText());
+        Utils.renderContainer(device, component);
+    }
+    finally {
+        AnchorRenderStack.pop();
+    }
+
+    if (style != null || component.getScriptListeners().length != 0) {
+        %></span><%
+    }
+%></write>
+</template>

@@ -1,0 +1,79 @@
+<project name="wingS Test Suite" default="main" basedir=".">
+  <property file="../build.properties"/>
+
+  <property name="home"  value=".."/>
+  <property name="dist"  value="../dist"/>
+
+  <property name="build"         value="build"/>
+  <property name="build.class"   value="build/class"/>
+
+  <path id="build.classpath">
+    <pathelement path="${java.class.path}/" />
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${dist}/lib">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+
+  <!-- ==================== Preparations ==================== -->
+  <target name="prepare">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.class}"/>
+  </target>
+
+
+  <!-- ==================== Compile ==================== -->
+  <target name="compile" depends="prepare">
+    <javac srcdir="src" destdir="${build.class}"
+	   debug="${build.debug}"
+	   deprecation="${build.deprecation}"
+	   encoding="ISO8859-1">
+      <classpath refid="build.classpath" />
+    </javac>
+  </target>
+
+  <target name="build" depends="compile">
+    <copy file="${dist}/lib/css1.jar" todir="${build.class}"/>
+  </target>
+
+  <!-- ==================== Test ==================== -->
+  <target name="test" depends="build">
+    <path id="test.classpath">
+      <path refid="build.classpath"/>
+      <pathelement location="res"/>
+      <pathelement location="${build.class}"/>
+    </path>
+
+    <junit printsummary="withOutAndErr" haltonfailure="yes" fork="yes">
+      <classpath refid="test.classpath"/>
+      <formatter type="plain" usefile="no"/>
+      <batchtest todir="${build.test.report}" fork="yes">
+        <fileset dir="${build.class}">
+          <include name="**/Test*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+
+  <!-- ==================== Admin ==================== -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete>
+      <fileset dir=".">
+        <include name="**/*.class" />
+        <include name="**/*.u" />
+        <include name="**/*.bak" />
+        <include name="**/*~" />
+        <include name="**/#*" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="all" depends="clean,build"/>
+  <target name="main" depends="build"/>
+</project>

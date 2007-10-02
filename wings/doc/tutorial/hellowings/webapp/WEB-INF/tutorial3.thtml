@@ -1,0 +1,22 @@
+<h1>Creating a webapplication with a WingS-servlet</h1>
+<p>Since you are reading this tutorial, it's sure, that you are
+not that much interested in serving static HTML.</p>
+<p>You'd like to know how to set up and run a WingS-servlet.</p>
+<h2>The WingS-servlet</h2>
+<p>The most simple WingS-servlet is, who would have expected, a "Hello
+WingS!" servlet.<br />It only writes on the browser's window "Hello
+WingS!".</p>
+<p>To implement such a type of servlet, you need this class:</p>
+<ul>
+<li>"<a href="../source/HelloWingS.java"><code>HelloWingS.java</code></a>"</li>
+</ul>
+<p>Download this file and place it into the "<code>TOMCAT_DIR/webapps/helloWingS/WEB-INF/classes</code>" directory.</p>
+<p>Follow me to the <object name="nextstep">next page</object> to see get the servlet running.</p>
+
+
+
+
+
+
+
+
