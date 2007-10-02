@@ -1,0 +1,17 @@
+<template name="SeparatorCG" for="org.wings.SSeparator">
+<write>
+<%
+    %><hr<%
+    %><%|class=Utils.style(component)%><%
+    %><%|width=component.getWidth()%><%
+    %><%|size=component.getSize()%><%
+    switch (component.getAlignment()) {
+        case SSeparator.RIGHT_ALIGN : %> align="right"<%   break;
+        case SSeparator.CENTER_ALIGN: %> align="center"<%  break;
+        case SSeparator.BLOCK_ALIGN : %> align="justify"<% break;
+    };
+    if (!component.getShade()) { %> noshade="1"<% } 
+    %>/><%
+%>
+</write>
+</template>

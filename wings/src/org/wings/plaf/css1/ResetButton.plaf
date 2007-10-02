@@ -1,0 +1,12 @@
+<!-- $Id$ -->
+
+<template name="ResetButtonCG" for="org.wings.SResetButton">
+<write>
+<%
+    %><input type="reset"<%
+    %><%|class=Utils.style(component)%><%
+    Utils.writeEvents(device, component);
+    %><%|tabindex=component.getFocusTraversalIndex()%><%
+    %><%|value=component.getText()%>/><%
+%></write>
+</template>

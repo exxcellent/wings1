@@ -1,0 +1,38 @@
+Some simple demos. 
+
+- wingSet: like the SwingSet Demo in jdk1.2
+- explorer: like Windows Explorer but on server side
+- frameset: frame support in wings
+- ldap: ldap browser
+
+
+Requirements:
+-------------
+
+- jdk1.2 or above
+- wings-0.9.8
+- jsdk2.2 (tomcat 3.2.1 or above)
+- ant 1.3 or above
+
+for the ldap demos:
+- jndi (http://java.sun.com/products/jndi)
+- ldap provider (http://java.sun.com/products/jndi/serviceproviders.html)
+
+
+Installation:
+-------------
+
+To compile and build the war file, start 
+
+ant all
+
+in this directory.
+
+The war files are in the directory build/deploy. Copy this files to your servlet
+containers webapps directory and restart the servlet container.
+Every war file contains a index.html, so the URLs for the demos are
+
+http://Your-Server/wingset
+http://Your-Server/explorer
+http://Your-Server/frameset
+http://Your-Server/ldap

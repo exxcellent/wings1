@@ -1,0 +1,12 @@
+<h1>Skeleton</h1>
+<p>Now you are as far as needed, to create your own WingS-application.</p>
+<p>We help you in your attempt by simply giving you a "Skeleton" of an application, which you can extend to match your visions.</p><p>This skeleton is a simple application just like the <code>HelloWingS</code> application, but it is zipped or tar-gzipped, and contains the libraries and a <code>build.xml</code> for <a href="http://jakarta.apache.org/ant"><code>jakarta-ant</code></a>.</p>
+<table>
+<tr><th>package</th><th>download</th></tr>
+<tr><td>WingSkeleton zipped</td><td><a href="../packages/wingskeleton.zip">download</a></td></tr>
+<tr><td>WingSkeleton tar.gz</td><td><a href="../packages/wingskeleton.tar.gz">download</a></td></tr>
+</table>
+<p>Simply unpack the downloaded package and compile and package to a war-file with "<code>ant war</code>". This will generate a "<code>wingskeleton.war</code>"-file in the "<code>packages</code>"-directory. Put this "war"-file into the Tomcat webapp directory and restart tomcat. Before delete all traces of the old "wingskeleton", because they might conflict.</p>
+<p>View your application with <a href="http://127.0.0.1/wingskeleton">http://127.0.0.1/wingskeleton</a>.</p>
+<p>To expand the application, add or edit components in the "<code>WingSSkeletonSession.java</code>"'s "<code>initGui()</code>" method. Don't forget to recompile and copy the "war"-file.</p>
+

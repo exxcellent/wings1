@@ -1,0 +1,44 @@
+<template name="MenuItemCG"
+          for="org.wings.SMenuItem"
+          extends="org.wings.plaf.css1.ButtonCG">
+
+<import>org.wings.script.*</import>
+
+
+protected void writeItemContent(final Device device, SMenuItem menuItem)
+  throws IOException
+{
+    SIcon icon = getIcon(menuItem);
+
+    %><nobr><%
+    if ( icon!=null ) {
+        %><img border="0" align="middle" src="<%=icon.getURL()%>"<%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        %>/><%
+    }
+
+    String text = menuItem.getText();
+
+    if ( text!=null ) {
+        %><%=text%><%
+    }
+    %></nobr><%
+}
+
+
+protected void writeItem(final Device device, SMenuItem menuItem)
+    throws IOException
+{
+    
+    writeItemContent(device, menuItem);
+}
+
+<write>
+<%
+    if ( component.isVisible() ) {
+        writeItem(device, component);
+    }
+%>
+</write>
+</template>

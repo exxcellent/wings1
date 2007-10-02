@@ -1,0 +1,31 @@
+<template name="DesktopPaneCG" for="org.wings.SDesktopPane">
+<comp-property type="String" name="style"></comp-property>
+<write>
+<%
+    SDesktopPane desktop = (SDesktopPane)component;
+    %><table cellpadding="0" cellspacing="7" border="0" width="100%"<%
+    %><%|class=Utils.style(component)%>><%
+
+    int componentCount = desktop.getComponentCount();
+    for (int i=0; i<componentCount; i++) {
+        SInternalFrame frame = (SInternalFrame)desktop.getComponent(i);
+        if (!frame.isClosed() && frame.isMaximized()) {
+            %><tr><td><%
+            frame.write(device);
+            %></td></tr></table><%
+            return;
+        }
+    }
+
+    for (int i=0; i<componentCount; i++) {
+        SInternalFrame frame = (SInternalFrame)desktop.getComponent(i);
+        if (!frame.isClosed()) {
+            %><tr><td><%
+            frame.write(device);
+            %></td></tr><%
+        }
+    }
+    %></table><%
+%>
+</write>
+</template>

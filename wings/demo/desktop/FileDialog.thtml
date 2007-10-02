@@ -1,0 +1,7 @@
+  <table>
+  <tr><td><component name="label">Choose File</component></td></tr>
+  <tr><td><input type="file" name="chooser" size=40></td></tr>
+  <tr><td><hr noshade=1/></td></tr>
+  <tr><td align="right"><input type="submit" value="Ok" name="okbutton">
+                        <input type="submit" value="Cancel" name="cancelbutton"></td></tr>
+  </table>

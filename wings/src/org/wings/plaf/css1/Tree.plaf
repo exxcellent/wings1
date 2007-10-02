@@ -1,0 +1,214 @@
+<!-- -*- html -*- 
+ $Id$ 
+-->
+<template name="TreeCG" for="org.wings.STree">
+<import>javax.swing.tree.*</import>
+<import>org.wings.tree.*</import>
+
+<property type="SIcon" name="expandControlIcon">org/wings/icons/plus.gif</property>
+<property type="SIcon" name="collapseControlIcon">org/wings/icons/minus.gif</property>
+<property type="SIcon" name="leafControlIcon"></property>
+<property type="SIcon" name="hashMark">org/wings/icons/TreeLine.gif</property>
+
+<property type="SIcon" name="emptyFillIcon">org/wings/icons/transdot.gif</property>
+
+<comp-property type="org.wings.tree.STreeCellRenderer" name="cellRenderer">new org.wings.tree.SDefaultTreeCellRenderer()</comp-property>
+<comp-property type="String" name="selectionStyle">treenodeselection</comp-property>
+
+<write>
+<%
+  int start = 0;
+  int count = component.getRowCount();
+
+  java.awt.Rectangle viewport = component.getViewportSize();
+  if (viewport != null) {
+     start = viewport.y;
+     count = viewport.height;
+  }
+
+  final int depth = component.getMaximumExpandedDepth();
+
+  %><table border="0" cellpadding="0" cellspacing="0"<%
+  final SDimension dim = component.getPreferredSize();
+  if (dim != null) {
+      %><%|width=dim.width%><%
+      %><%|height=dim.height%><%
+  }
+  %><%|class=Utils.style(component)%><%
+  %>><%
+  
+  for (int i=start; i < count; ++i) {
+     writeTreeNode(component, device, i, depth);
+  }
+
+  // expandable last row to fit preferred table size on IE
+  %><tr><td<%
+  %><%|colspan=depth%><%
+  %>></td></tr></table><%
+%></write>
+
+  private final boolean isLastChild(TreeModel model, TreePath path, int i) {
+      Object node = path.getPathComponent(i);
+      if (i == 0)
+          return true;
+      Object parent = path.getPathComponent(i-1);
+
+      return node.equals(model.getChild(parent,model.getChildCount(parent)-1));
+  }
+
+  private void writeIcon(Device device, SIcon icon, int width, int height) throws IOException {
+       %><img<%
+       %><%|src=icon.getURL()%><%
+       %><%|width=width%><%
+       %><%|height=height%><%
+       %>/><%
+  }
+
+  private void writeIcon(Device device, SIcon icon, boolean nullBorder) throws IOException {
+       if (icon == null) return;
+       %><img<%
+       if (nullBorder) {
+          %> border="0"<%
+       }
+       %><%|src=icon.getURL()%><%
+       %><%|width=icon.getIconWidth()%><%
+       %><%|height=icon.getIconHeight()%><%
+       %>/><%
+  }
+
+  private void writeTreeNode(STree component, Device device, int row, int depth)
+        throws IOException {
+        final TreePath path = component.getPathForRow(row);
+	final int nodeIndentDepth = component.getNodeIndentDepth();
+
+        final Object node = path.getLastPathComponent();
+	final STreeCellRenderer cellRenderer = component.getCellRenderer();
+
+        final boolean isLeaf = component.getModel().isLeaf(node);
+        final boolean isExpanded = component.isExpanded(path);
+        final boolean isSelected = component.isPathSelected(path);
+
+	final boolean isSelectable = (component.getSelectionModel() != SDefaultTreeSelectionModel.NO_SELECTION_MODEL);
+
+        SComponent cellComp =cellRenderer.getTreeCellRendererComponent(component, node,
+			                                               isSelected,
+                                                                       isExpanded,
+                                                                       isLeaf, row,
+                                                                       false);
+        
+        %><tr height="1"><%
+	/*
+	 * fill the indented area.
+	 */
+        for (int i=((component.isRootVisible())?0:1); i<path.getPathCount()-1; ++i) {
+	    %><td<%
+	    %><%|width=nodeIndentDepth%><%
+            if ( hashMark!=null && !isLastChild(component.getModel(), path, i) ) {
+	        %> style="background-image:url(<%
+  	        %><%=hashMark.getURL()%><%
+	        %>)"<%
+            }
+	    %>><% // close <td>
+	    if (emptyFillIcon != null) {
+		writeIcon(device, emptyFillIcon, nodeIndentDepth, 1);
+            }
+	    else {
+		for (int n=nodeIndentDepth; n > 0; --n) {
+         	    %>&nbsp;<%
+                }
+	    }
+	    %></td><%
+        }
+
+	/*
+	 * now, write the component.
+	 */
+	%><td nowrap<%
+  	%><%|colspan=depth - (path.getPathCount()-1)%><%
+	%>><%
+
+	/* 
+	 * in most applications, the is no need to render a control icon for a
+         * leaf. So in that case, we can avoid writing the sourrounding 
+         * table, that will speed up things in browsers.
+	 */
+	final boolean renderControlIcon = !(isLeaf && leafControlIcon==null);
+
+        if ( renderControlIcon ) {
+            %><table border="0" cellpadding="0" cellspacing="0"><tr><td nowrap><%
+            if (isLeaf) {
+                  writeIcon(device, leafControlIcon, false);
+            } 
+            else {
+                /*
+		 * write expansion control (the [-] or [+] thingies)
+		 */
+		// the tree generates the URL that it can handle in its RequestListener
+                RequestURL expansionAddr = component.getRequestURL();
+                expansionAddr.addParameter(component,
+                                           component.getExpansionParameter(row, false));
+		%><a href="<%
+                %><%=expansionAddr.toString()%><%
+                %>"><%
+
+                if (isExpanded) {
+                    if (collapseControlIcon == null) {
+                        %>-<%
+                    }
+                    else {
+		        writeIcon(device, collapseControlIcon, true);
+                    }
+                } 
+                else {
+                    if (expandControlIcon == null) {
+                        %>+<%
+                    }
+                    else {
+		        writeIcon(device, expandControlIcon, true);
+                    }
+                }
+		%></a><%
+	    } 
+            %></td><td nowrap><%
+	}
+
+	SCellRendererPane rendererPane = component.getCellRendererPane();
+        if ( isSelectable ) {
+	    // ask the tree for the URL it has for expansion events
+            RequestURL selectionAddr = component.getRequestURL();
+            selectionAddr.addParameter(Utils.event(component),
+	                               component.getSelectionParameter(row, false));
+            
+            if ( cellComp instanceof ClickableRenderComponent ) {
+                AnchorRenderStack.push(selectionAddr, null, 
+                                       cellComp.getToolTipText());
+                rendererPane.writeComponent(device, cellComp, component);
+                AnchorRenderStack.pop();
+            } 
+            else {
+	        /*
+		 * if it is not a ClickableRenderComponent, then surround it 
+		 * with <a href=".."></a> and hope for the best...
+		 */
+		%><a href="<%
+                %><%=selectionAddr.toString()%><%
+                %>"><%
+                rendererPane.writeComponent(device, cellComp, component);
+		%></a><%
+            }
+        } 
+        else {
+            rendererPane.writeComponent(device, cellComp, component);
+        }
+
+        if ( renderControlIcon ) {
+            %></td></tr></table><%
+        }
+
+        // finalize row. add newline.
+        %></td><td width="100%"></td></tr>
+<%
+    }
+
+</template>
+

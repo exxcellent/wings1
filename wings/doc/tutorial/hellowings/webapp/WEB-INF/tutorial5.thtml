@@ -1,0 +1,8 @@
+<h1>Running the servlet</h1>
+<p>After compiling the classes you have to tell your tomcat, what to do with it.</p>
+<h2>Creating a simple web.xml</h2>
+<p>Most web application needs further information about the served objects, if it won't only serve "<code>.html</code>" files.</p>
+<p>For our servlet we need to let the servlet container know, which class it has to load and to execute to get the servlet running. Things like the classname, the servlet's name and several initial parameters, will be passed to Tomcat using "<code>web.xml</code>".</p>
+<p>The "<code>web.xml</code>" is located in the webapplications "<code>WEB-INF</code>" directory and must be valid xml. You can download a sample <a href="../source/web.xml">"<code>web.xml</code>"</a>.</p>
+<p>After installing the "<code>web.xml</code>" in the "<code>TOMCAT_DIR/webapps/helloWingS/WEB-INF</code>" directory, you can restart the servlet container and go on with <object name="nextstep">next page</object>.</p>
+

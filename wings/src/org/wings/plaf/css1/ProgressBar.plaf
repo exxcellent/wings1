@@ -1,0 +1,56 @@
+<!-- -*- html -*- -->
+<template name="ProgressBarCG" for="org.wings.SProgressBar">
+
+private static final SIcon BLIND_ICON = new SResourceIcon("org/wings/icons/blind.gif");
+
+<comp-property type="java.awt.Color" name="filledColor">Color.red</comp-property>
+<comp-property type="java.awt.Color" name="unfilledColor">Color.gray</comp-property>
+<comp-property type="java.awt.Color" name="foreground">Color.red</comp-property>
+<comp-property type="java.awt.Color" name="borderColor">Color.black</comp-property>
+<comp-property type="SDimension" name="preferredSize">new SDimension(200,5)</comp-property>
+
+
+<write>
+<%
+
+    String style = Utils.style(component);
+
+    SDimension size = component.getPreferredSize();
+    int width = size!=null ? size.getIntWidth() : 200;
+    int height = size!=null ? size.getIntHeight() : 5;
+
+    if ( component.isStringPainted() ) {
+        %><table border="0" cellpadding="0" cellspacing="0"><tr><td><%
+    }
+    if ( component.isBorderPainted() ) {
+        %><table border="0" cellpadding="1" cellspacing="0"><tr><td<%
+	%><%|bgcolor=component.getBorderColor()%>><%
+    }
+ 
+    %><table border="0" cellpadding="0" cellspacing="0"><%
+    %><tr><%
+        %><td<%|bgcolor=component.getFilledColor()%>><%
+            %><img<%|src=BLIND_ICON.getURL()%> width="<%=(int)(width*component.getPercentComplete())%>"<%
+                %> height="<%=height%>"></td><%
+        %><td<%|bgcolor=component.getUnfilledColor()%>><%
+            %><img<%|src=BLIND_ICON.getURL()%> width="<%=(int)(width*(1-component.getPercentComplete()))%>"<%
+                %> height="<%=height%>"><%
+        %></td><%
+    %></tr><%
+    %></table><%
+
+    if ( component.isBorderPainted() ) {
+        %></td></tr></table><%
+    }
+
+    if ( component.isStringPainted() ) {
+        %></td></tr><tr><td align="center"><%
+        if (style != null) {
+            %><span class="<%=style%>"><%
+        }
+	%><%=component.getString()%><%
+       if (style != null) { %></span><% }
+        %></td></tr></table><%
+    }
+%></write>
+</template>

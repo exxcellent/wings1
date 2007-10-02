@@ -1,0 +1,6 @@
+A simple example from the jdk1.2 jfc demos. To use it, you must adapt
+the ACTION in TableExample2.html to your servlet engine path. 
+
+Updates are supported, but deactivated. Look in JDBCAdapter to activate 
+updates.
+

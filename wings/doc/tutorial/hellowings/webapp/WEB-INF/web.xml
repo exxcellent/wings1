@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+  PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+  "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+
+<web-app>
+
+  <servlet>
+    <servlet-name>HelloWingS</servlet-name>
+    <servlet-class>org.wings.session.WingServlet</servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>HelloWingS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.deploy</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.name</param-name>
+      <param-value>xhtml/css1</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>HelloWingSExt</servlet-name>
+    <servlet-class>org.wings.session.WingServlet</servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>HelloWingSExt</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.deploy</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.name</param-name>
+      <param-value>xhtml/css1</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>WingSTutorial</servlet-name>
+    <servlet-class>org.wings.session.WingServlet</servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>de.mercatis.hellowings.WingSTutorial</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.deploy</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.name</param-name>
+      <param-value>xhtml/css1</param-value>
+    </init-param>
+    <init-param>
+      <param-name>slides.config</param-name>
+      <param-value>WEB-INF/tutorial-slides.properties</param-value>
+    </init-param>
+    <init-param>
+      <param-name>slides.template</param-name>
+      <param-value>WEB-INF/tutorial-frame.thtml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>slides.bgimage</param-name>
+      <param-value>WEB-INF/bgimage.jpg</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>HelloWingS</servlet-name>
+    <url-pattern>/HelloWingS/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>HelloWingSExt</servlet-name>
+    <url-pattern>/HelloWingSExt/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>WingSTutorial</servlet-name>
+    <url-pattern>/WingSTutorial/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- The Welcome File List -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>

@@ -1,0 +1,23 @@
+WingSkeleton v0.1
+=================
+
+
+Description
+-----------
+The WingSkeleton is a  tutorial is basic WingS application to be filled with life by you.
+It is only required to edit the "WingSSkeleteonSession.java"-file and recompile/build war to implement new functionality.
+
+Installation
+------------
+Before installation, you need a working servlet container (eg. http://jakarta.apache.org/tomcat).
+Also you will need a working ANT tool (http://jakarta.apache.org/ant).
+
+
+Build the war-file by typing "ant war" at the command line and execute this.
+
+The resulting "war"-file will be placed to the directory "build/packages". Copy, link or move this file to your servlet container war application directory and restart your servlet container. Before restarting, you should remove all old traces of the Application
+
+Copyright
+---------
+Copyright 2002 mercatis information system GmbH, Germany
+

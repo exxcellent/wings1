@@ -1,0 +1,49 @@
+.wings {
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #770000
+}
+.bigwings {
+   font-family: sans-serif;
+   font-size: 18pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #770000
+}
+
+.bigwingsheader {
+   vertical-align: middle;
+   font-family: sans-serif;
+   font-size: 18pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #ffffff
+}
+
+.bigis {
+   font-family: sans-serif;
+   font-size: 16pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077
+}
+
+.question {
+   margin: 3pt;
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: bold;
+   font-style: normal;
+   color: #007700
+}
+
+.answer {
+   margin: 3pt;
+   font-family: sans-serif;
+   font-size: 12pt;
+   font-weight: normal;
+   font-style: normal;
+   color: #000077
+}

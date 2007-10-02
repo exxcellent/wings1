@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>
+      LdapClient
+    </servlet-name>
+    <servlet-class>
+      org.wings.session.WingServlet
+    </servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>ldap.LdapClient</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.factory</param-name>
+      <param-value>org.wings.plaf.LookAndFeelFactory$Default</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.default</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+    <init-param>
+      <param-name>java.naming.factory.initial</param-name>
+      <param-value>com.sun.jndi.ldap.LdapCtxFactory</param-value>
+    </init-param>
+    <init-param>
+      <param-name>java.naming.provider.url</param-name>
+      <param-value>@java.naming.provider.url@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>java.naming.provider.basedn</param-name>
+      <param-value>@java.naming.provider.basedn@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>java.naming.security.principal</param-name>
+      <param-value>@java.naming.security.principal@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>java.naming.security.credentials</param-name>
+      <param-value>@java.naming.security.credentials@</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>
+      LdapBrowser
+    </servlet-name>
+    <servlet-class>
+      org.wings.session.WingServlet
+    </servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>ldap.LdapBrowser</param-value>
+
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.deploy</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.name</param-name>
+      <param-value>xhtml/css1</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ldap.server.host</param-name>
+      <param-value>@java.naming.provider.url@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ldap.server.basedn</param-name>
+      <param-value>@java.naming.provider.basedn@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ldap.server.binddn</param-name>
+      <param-value>@java.naming.security.principal@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ldap.server.password</param-name>
+      <param-value>@java.naming.security.credentials@</param-value>
+    </init-param>
+    <init-param>
+      <param-name>search.attribute</param-name>
+      <param-value>cn,sn</param-value>
+    </init-param>
+    <init-param>
+      <param-name>search.label</param-name>
+      <param-value>Name</param-value>
+    </init-param>
+    <init-param>
+      <param-name>overview.attributes</param-name>
+      <param-value>cn,sn,mail,telephoneNumber</param-value>
+    </init-param>
+    <init-param>
+      <param-name>overview.labels</param-name>
+      <param-value>Vorname,Nachname,mail,erreichbar unter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>detailview.attributes</param-name>
+      <param-value>cn,sn,uid,mail,labeledURI,telephoneNumber,Geburtsjahr,Taetigkeitsbereiche,Zusatzausbildungen,BeruflicherWerdegang,Seit,Teamzugehoerigkeit,jpegPhoto</param-value>
+    </init-param>
+    <init-param>
+      <param-name>detailview.labels</param-name>
+      <param-value>Vorname,Name,UID,EMail,WWW,Telefon,Geburtsjahr,Tätigkeitsbereiche,Zusatzausbildungen,BeruflicherWerdegang,Seit,Teamzugehoerigkeit,Foto</param-value>
+    </init-param>
+  </servlet>
+
+<!-- url mappings -->
+
+  <servlet-mapping>
+    <servlet-name>
+      LdapClient
+    </servlet-name>
+    <url-pattern>
+      /LdapClient/*
+    </url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>
+      LdapBrowser
+    </servlet-name>
+    <url-pattern>
+      /LdapBrowser/*
+    </url-pattern>
+  </servlet-mapping>
+
+
+  
+
+  
+
+</web-app>
+
+
+
+
+
+

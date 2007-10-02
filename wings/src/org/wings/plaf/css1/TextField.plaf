@@ -1,0 +1,34 @@
+<!-- $Id$ -->
+
+<template name="TextFieldCG" for="org.wings.STextField">
+<import>org.wings.script.*</import>
+    private static final JavaScriptListener submitListener = new JavaScriptListener(JavaScriptEvent.ON_CHANGE, "commandlessSubmitForm(event)");
+
+<write>
+<%
+    // writeEvents();
+    %><input type="text"<%
+    %><%|size=component.getColumns()%><%
+    if (component.getMaxColumns() >= 0) {
+      %><%|maxlength=component.getMaxColumns()%><%
+    }
+    %><%|class=Utils.style(component)%><%
+    %><%|style=component.getPreferredSize()%><%
+    if (!component.isEditable() || !component.isEnabled() ) { %> readonly="1"<% }
+    if (component.isEnabled()) {
+        %> name="<%=Utils.event(component)%>"<%
+        %> id="<%=component.getComponentId()%>"<%
+    } else { %> disabled="1"<% } 
+    %><%|tabindex=component.getFocusTraversalIndex()%><%
+    
+    if(!(component instanceof org.wings.SFormattedTextField)){
+    component.removeScriptListener(submitListener);
+        if (component.getActionListeners().length>0) {
+            component.addScriptListener(submitListener);
+        }
+    }
+    Utils.writeEvents(device, component);
+
+      
+    %><%|value=component.getText()%>/></write>
+</template>

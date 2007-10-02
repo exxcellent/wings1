@@ -1,0 +1,9 @@
+<template name="ToggleButtonCG" 
+          for="org.wings.SToggleButton"
+	  extends="org.wings.plaf.css1.ButtonCG">
+  <comp-property type="String" name="selectionStyle">selection</comp-property>
+<write>
+<%
+	super.write(device, component);
+%></write>
+</template>

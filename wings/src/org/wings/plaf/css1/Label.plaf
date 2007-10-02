@@ -1,0 +1,168 @@
+<!-- -*- html -*- -->
+<template name="LabelCG" for="org.wings.SLabel">
+
+<property type="SIcon" name="clickableFallbackIcon">org/wings/icons/Pencil.gif</property>
+
+public void writeIcon(Device device, SIcon icon, SLabel label, AnchorProperties anchor) throws IOException {
+    if (icon != null) {
+        writeAnchorStart(device, anchor, label);
+        %><img border="0"<%
+        if (label.isImageAbsBottom()) {
+            %> align="absbottom"<%
+        }
+        Utils.writeToolTip(device, label);
+        /* write optional attributes ..*/
+        %><%|src=icon.getURL()%><%
+        %><%|width=icon.getIconWidth()%><%
+        %><%|height=icon.getIconHeight()%><%
+        Utils.writeEvents(device, label);
+        %> /><%
+        writeAnchorEnd(device, anchor);
+    }
+}
+
+public void writeText(Device device, SLabel label, AnchorProperties anchor) throws IOException {
+    final String text = label.getText();
+    if (text != null) {
+        writeAnchorStart(device, anchor, label);
+        final boolean noBreak = label.isNoBreak();
+
+        if (noBreak) {
+            %><nobr><%
+        }
+        %><%=text%><%
+        if (noBreak) {
+            %></nobr><%
+        }
+        writeAnchorEnd(device, anchor);
+    }
+}
+
+public void writeAnchorStart(Device device, AnchorProperties anchor, SLabel label) throws IOException {
+    if ( anchor!=null ) {
+        if ( anchor.isFormAnchor() ) {
+            %><a href="" onclick="return submitForm(event, '<%=anchor.getFormEventName()%>','<%=anchor.getFormEventValue()%>')"<%
+        } else {
+            %><a href="<%=anchor.getURL().toString()%>"<%|target=anchor.getTarget()%><%
+        }
+        Utils.writeToolTip(device, label);
+        %>><%
+    }
+}
+
+public void writeAnchorEnd(Device device, AnchorProperties anchor) throws IOException {
+   if ( anchor!=null ) {
+        %></a><%
+    }
+}
+
+<write>
+<%
+    String text = component.getText();
+    SIcon  icon = component.isEnabled() ? component.getIcon() : component.getDisabledIcon();
+    String style = Utils.style(component);
+    final int horizontalTextPosition = component.getHorizontalTextPosition();
+    final int verticalTextPosition   = component.getVerticalTextPosition();
+    final boolean noBreak = component.isNoBreak();
+    final AnchorProperties anchor = AnchorRenderStack.get();
+
+    /*
+    * fallback icon in case we are clickable, but there is nothing
+    * to click on (no icon nor text).
+    */
+    if (icon == null) {
+        if (anchor != null && (text == null || text.length() == 0)) {
+            // no text either.
+            icon = clickableFallbackIcon;
+        }
+    }
+
+    if (icon == null) {
+        if (style != null) {
+            %><span class="<%=style%>"><%
+        }
+        writeText(device, component, anchor);
+        
+        if (style != null) {
+            %></span><%
+        }
+    } else if (text == null || text.length() == 0) {
+        if (style != null) {
+        %><span class="<%=style%>"><%
+        }
+        writeIcon(device, icon, component, anchor);
+        if (noBreak) {
+            if (style == null) {
+              %><span <%
+            }
+            %>white-Space:pre; <%
+        }
+        if ((style != null) || noBreak) {
+            %></span><%
+        }
+    } else {
+        int cols = 0;
+        %><table cellspacing="0"<%
+        %><%|class=style%><%
+        %>><%
+        // if we are on the top, create a top row
+        if (horizontalTextPosition == CENTER && verticalTextPosition == TOP) {
+            %><tr><td><%
+            writeText(device, component, anchor);
+            %></td></tr><%
+        }
+
+        %><tr><%
+
+        if (horizontalTextPosition == LEFT) {
+            %><td<%
+            if (verticalTextPosition == TOP) {
+                %> valign="top"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="bottom"<%
+            }
+            %>><%
+            writeText(device, component, anchor);
+            %></td><%
+        }
+
+        %><td<%
+        /* move icon the opposite direction the text goes. But only
+        * if the horizonal text-position is not center, since this is
+        * renderered in another row, then.
+        */
+        if (horizontalTextPosition != CENTER) {
+            if (verticalTextPosition == TOP) {
+                %> valign="bottom"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="top"<%
+            }
+        }
+        %>><%
+        writeIcon(device, icon, component, anchor); %></td><%
+
+        if (horizontalTextPosition == RIGHT) {
+            %><td<%
+            if (verticalTextPosition == TOP) {
+                %> valign="top"<%
+            } else if (verticalTextPosition == BOTTOM) {
+                %> valign="bottom"<%
+            }
+            %>><%
+            writeText(device, component, anchor);
+            %></td><%
+        }
+
+        %></tr><%
+
+        // if we are on the top, create a top row
+        if (horizontalTextPosition == CENTER && verticalTextPosition==BOTTOM) {
+            %><tr><td><%
+            writeText(device, component, anchor);
+            %></td></tr><%
+        }
+        %></table><%
+    }
+
+%></write>
+</template>
