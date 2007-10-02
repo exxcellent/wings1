@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<project name="cg build" default="main" basedir=".">
+  <property name="package"           value="plaf"/>
+  <property name="javac.debug"       value="true"/>
+  <property name="javac.deprecation" value="true"/>
+
+  <!-- directories -->
+  <property name="build"       value="build"/>
+  <property name="build.cg"    value="${build}/cg"/>
+  <property name="build.java"  value="${build}/java"/>
+  <property name="build.class" value="${build}/class"/>
+  <property name="dist"        value="dist"/>
+  <property name="dist.plaf"   value="${dist}/plaf"/>
+
+  <path id="build.classpath">
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- ==================== Preparations ==================== -->
+  <target name="prepare">
+    <tstamp/>
+    <mkdir dir="lib"/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.cg}"/>
+    <mkdir dir="${build.java}"/>
+    <mkdir dir="${build.class}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist.plaf}"/>
+  </target>
+
+
+  <target name="java" depends="prepare">
+    <taskdef name="claf"
+	     classpath="lib/wings.jar"
+	     classname="org.wings.plaf.compiler.ClafTask"/>
+    <claf destdir="build/java"
+	  package="${package}">
+      <fileset dir="${build.cg}">
+        <include name="*.plaf"/>
+      </fileset>
+    </claf>
+  </target>
+
+  <target name="class" depends="prepare">
+    <javac srcdir="${build.java}" destdir="${build.class}"
+	   debug="${javac.debug}"
+	   deprecation="${javac.deprecation}">
+      <classpath refid="build.classpath"/>
+    </javac>
+  </target>
+
+  <target name="plaf" depends="prepare">
+    <jar file="${dist.plaf}/${package}-plaf.jar">
+      <fileset dir="${build.class}">
+        <include name="**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+
+  <!-- ==================== Admin ==================== -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="build" depends="java,class,plaf"/>
+  <target name="main"  depends="build"/>
+  <target name="all"   depends="clean,build"/>
+</project>

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!-- ant build file for wingX Menupane demo-->
+<!-- $Id$ -->
+
+<project name="wingX-Demo" default="main" basedir=".">
+  <!-- read custom properties from file -->
+  <property file="../etc/build.properties" />
+
+  <!-- directories -->
+  <property name="build"       value="build"/>
+  <property name="build.class" value="${build}/class"/>
+  <property name="dist"        value="dist"/>
+  <property name="dist.deploy" value="${dist}/deploy"/>
+
+  <path id="build.classpath">
+    <fileset dir="../dist/lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- ==================== Preparations ==================== -->
+  <target name="prepare">
+    <tstamp/>
+    <mkdir dir="lib"/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.class}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist.deploy}"/>
+  </target>
+
+
+  <!-- ==================== Build wingX Demos ================ -->
+  <!-- <target name="build" depends="beaneditor,ide"/> -->
+  <target name="build" depends="ide"/>
+
+  <target name="menupane" depends="prepare">
+    <javac srcdir="menupane" destdir="${build.class}"
+	   debug="${build.debug}"
+	   deprecation="${build.deprecation}">
+      <classpath refid="build.classpath"/>
+    </javac>
+    <war warfile="${dist.deploy}/menupane.war"
+	 webxml="menupane/web.xml">
+      <lib dir="../dist/lib">
+        <include name="wings.jar"/>
+        <include name="wingx.jar"/>
+        <include name="css1.jar"/>
+      </lib>
+      <classes dir="${build.class}">
+        <include name="menupane/**"/>
+      </classes>
+      <fileset dir="menupane">
+        <include name="index.html"/>
+      </fileset>
+    </war>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <javac srcdir="." destdir="${build.class}"
+	   debug="${build.debug}"
+	   deprecation="${build.deprecation}">
+      <classpath refid="build.classpath"/>
+    </javac>
+  </target>
+
+  <target name="beaneditor" depends="compile">
+    <war warfile="${dist.deploy}/beaneditor.war"
+	 webxml="src/beaneditor/web.xml">
+      <lib dir="../dist/lib">
+        <include name="wings.jar"/>
+        <include name="wingx.jar"/>
+      </lib>
+      <classes dir="${build.class}">
+        <include name="beaneditor/**"/>
+      </classes>
+      <fileset dir="src/beaneditor">
+        <include name="index.html"/>
+      </fileset>
+      <fileset dir="src/beaneditor">
+        <include name="*.java"/>
+      </fileset>
+      <fileset dir="../dist/lib">
+        <include name="css1.jar"/>
+      </fileset>
+    </war>
+  </target>
+
+  <target name="ide" depends="compile">
+    <war warfile="${dist.deploy}/ide.war"
+	 webxml="ide/web.xml">
+      <lib dir="../dist/lib">
+        <include name="wings.jar"/>
+        <include name="wingx.jar"/>
+        <include name="ant.jar"/>
+      </lib>
+      <classes dir="${build.class}">
+        <include name="ide/**"/>
+      </classes>
+      <fileset dir="ide">
+        <include name="index.html"/>
+      </fileset>
+      <fileset dir="ide">
+        <include name="*.java"/>
+      </fileset>
+      <fileset dir="../dist/lib">
+        <include name="css1.jar"/>
+      </fileset>
+      <fileset dir="ide">
+        <include name="cg-build.xml"/>
+      </fileset>
+    </war>
+  </target>
+
+  <target name="tomcat" depends="build" if="tomcat.home">
+    <!-- <mkdir dir="${tomcat.home}/webapps/beaneditor"/>
+    <unwar src="${dist.deploy}/beaneditor.war" dest="${tomcat.home}/webapps/beaneditor"/>
+    <touch file="${tomcat.home}/webapps/beaneditor/WEB-INF/web.xml"/>
+    -->
+
+    <mkdir dir="${tomcat.home}/webapps/ide"/>
+    <unwar src="${dist.deploy}/ide.war" dest="${tomcat.home}/webapps/ide"/>
+    <touch file="${tomcat.home}/webapps/ide/WEB-INF/web.xml"/>
+  </target>
+
+
+  <!-- ==================== Admin ==================== -->
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="cleansource">
+    <delete>
+      <fileset dir="${src}">
+        <include name="**/*.class" />
+        <include name="**/*.u" />
+        <include name="**/*~" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="all" depends="clean,build"/>
+  <target name="main" depends="build"/>
+</project>

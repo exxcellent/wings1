@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>
+      MenuPane
+    </servlet-name>
+    <servlet-class>
+      org.wings.session.WingServlet
+    </servlet-class>
+    <init-param>
+      <param-name>wings.mainclass</param-name>
+      <param-value>menupane.MenuPane</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.factory</param-name>
+      <param-value>org.wings.plaf.LookAndFeelFactory$Default</param-value>
+    </init-param>
+    <init-param>
+      <param-name>wings.lookandfeel.default</param-name>
+      <param-value>/css1.jar</param-value>
+    </init-param>
+  </servlet>
+
+<!-- url mapping -->
+
+  <servlet-mapping>
+    <servlet-name>
+      MenuPane
+    </servlet-name>
+    <url-pattern>
+      /MenuPane/*
+    </url-pattern>
+  </servlet-mapping>
+
+</web-app>
