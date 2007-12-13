@@ -589,10 +589,14 @@ public abstract class SComponent
             attributes = new SimpleAttributeSet();
         }
 
-        boolean changed = attributes.putAll(CSSStyleSheet.getAttributes(font));
-        if (changed) {
-            reload(ReloadManager.RELOAD_STYLE);
-        }
+        attributes.remove(Style.FONT);
+        attributes.remove(Style.FONT_FAMILY);
+        attributes.remove(Style.FONT_SIZE);
+        attributes.remove(Style.FONT_STYLE);
+        attributes.remove(Style.FONT_WEIGHT);
+
+        attributes.putAll(CSSStyleSheet.getAttributes(font));
+        reload(ReloadManager.RELOAD_STYLE);
     }
 
     /**
