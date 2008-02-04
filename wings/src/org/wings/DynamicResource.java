@@ -60,36 +60,43 @@ public abstract class DynamicResource
      */
     private SFrame frame;
 
+    /** List of HTTP Header entries. */
+    private final List httpHeaders;
+
+    /** Absolute expiration date. */
+    private final Date expirationDate;
+
     /** @see #getHeaders() */
     protected static final List NO_EXPIRATION_HEADERS ;
-
     static {
         List headerList = new ArrayList();
         headerList.add(new HeaderEntry("Expires", new Date(1000)));
-        headerList.add(new HeaderEntry("Cache-Control", "no-store, no-cache, must-revalidate"));
-        headerList.add(new HeaderEntry("Cache-Control", "post-check=0, pre-check=0"));
+        headerList.add(new HeaderEntry("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0"));
         headerList.add(new HeaderEntry("Pragma", "no-cache"));
         NO_EXPIRATION_HEADERS = Collections.unmodifiableList(headerList);
     }
 
+    /** Default period which a dynamic ressource is allowed to be cachhed. */
+    protected static final int EXPIRATION_IN_MILLISECONDS = 15 * 60 * 1000;
 
     protected DynamicResource(String extension, String mimeType) {
         super(extension, mimeType);
+        httpHeaders = new ArrayList();
+        expirationDate = new Date(System.currentTimeMillis() + EXPIRATION_IN_MILLISECONDS);
+        httpHeaders.add(new HeaderEntry("Expires", expirationDate));
     }
 
-    /**
-     *
-     */
     public DynamicResource(SFrame frame) {
-      this(frame, "", "");
+        this(frame, "", "");
     }
 
-    /**
-     *
-     */
     public DynamicResource(SFrame frame, String extension, String mimeType) {
         super(extension, mimeType);
         this.frame = frame;
+
+        httpHeaders = new ArrayList();
+        expirationDate = new Date(System.currentTimeMillis() + EXPIRATION_IN_MILLISECONDS);
+        httpHeaders.add(new HeaderEntry("Expires", expirationDate));
     }
 
     /**
@@ -115,6 +122,7 @@ public abstract class DynamicResource
      */
     public final void invalidate() {
         epochCache = "W" + StringUtil.toShortestAlphaNumericString(++epoch);
+        expirationDate.setTime(System.currentTimeMillis() + EXPIRATION_IN_MILLISECONDS);
         if (logger.isDebugEnabled()) {
             String name = getClass().getName();
             name = name.substring(name.lastIndexOf(".") + 1);
@@ -124,9 +132,6 @@ public abstract class DynamicResource
         
     }
 
-    /**
-     *
-     */
     public final String getEpoch() {
         return epochCache;
     }
@@ -147,11 +152,6 @@ public abstract class DynamicResource
         return propertyService;
     }
 
-    /**
-     * TODO: documentation
-     *
-     * @return
-     */
     public String toString() {
         return getId() + " " + getEpoch();
     }
@@ -163,7 +163,7 @@ public abstract class DynamicResource
       * @return Set of {@link java.util.Map.Entry} (key-value pairs)
       */
     public Collection getHeaders() {
-        return NO_EXPIRATION_HEADERS;
+        return httpHeaders;
     }
 
     /**

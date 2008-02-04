@@ -340,10 +340,12 @@ public abstract class SComponent
      * @see      org.wings.SComponent#removeComponentListener
      */
     public final void addScriptListener(ScriptListener listener) {
-        addEventListener(ScriptListener.class, listener);
+        if (listener != null) {
+            addEventListener(ScriptListener.class, listener);
+            if (listener.getScript() != null && listener.getScript().length() > 0)
+                reload(ReloadManager.RELOAD_SCRIPT);
+        }
     }
-    
-   
 
     /**
      * Removes the specified component listener so that it no longer
@@ -357,7 +359,11 @@ public abstract class SComponent
      * @see      org.wings.SComponent#addComponentListener
      */
     public final void removeScriptListener(ScriptListener listener) {
-        removeEventListener(ScriptListener.class, listener);
+        if (listener != null) {
+            removeEventListener(ScriptListener.class, listener);
+            if (listener.getScript() != null && listener.getScript().length() > 0)
+                reload(ReloadManager.RELOAD_SCRIPT);
+        }
     }
 
     public ScriptListener[] getScriptListeners() {
@@ -1230,7 +1236,15 @@ public abstract class SComponent
             cg.installCG(this);
         }
         firePropertyChange("CG", oldCG, newCG);
-        reloadIfChange(ReloadManager.RELOAD_ALL, cg, oldCG);
+        reloadIfChange(ReloadManager.RELOAD_CODE, cg, oldCG);
+        // Only reload related ressources if necessary
+        if (listeners != null) {
+            if (getScriptListeners().length > 0)
+                reloadIfChange(ReloadManager.RELOAD_SCRIPT, cg, oldCG);
+        }
+        if (attributes != null && attributes.size() > 0) {
+            reloadIfChange(ReloadManager.RELOAD_STYLE, cg, oldCG);
+        }
     }
 
     /**

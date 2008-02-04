@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wings.script.DynamicScriptResource;
 import org.wings.style.DynamicStyleSheetResource;
+import org.wings.session.SessionManager;
 
 /**
  * This is the default implementation of the reload manager.
@@ -44,6 +45,10 @@ public class DefaultReloadManager
     
     public void reload(SComponent component, int aspect) {
         SFrame parent = component.getParentFrame();
+
+        if (parent == null) {
+            parent = SessionManager.getSession().getRootFrame();
+        }
 
         if (parent == null) {
             return;
