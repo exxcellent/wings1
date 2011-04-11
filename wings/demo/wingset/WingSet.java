@@ -21,20 +21,17 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.wings.ClasspathResource;
-import org.wings.SResourceIcon;
+import org.wings.SBorderLayout;
 import org.wings.SContainer;
 import org.wings.SFrame;
 import org.wings.SIcon;
 import org.wings.SLabel;
+import org.wings.SResourceIcon;
 import org.wings.SRootLayout;
 import org.wings.STabbedPane;
-import org.wings.SBorderLayout;
 import org.wings.header.Link;
+import org.wings.session.SessionManager;
 import org.wings.session.WingsStatistics;
 import org.wings.util.TimeMeasure;
 
@@ -144,6 +141,7 @@ public class WingSet
     public WingSet() {
         frame = new SFrame("WingSet");
         frame.setTitle("WingSet Demo");
+        SessionManager.getSession().setCharacterEncoding("UTF-8");
 
         // import additional templates
         frame.addHeader(new Link("stylesheet", null, "text/css", null, new ClasspathResource("/wingset/css/myapp.css", "text/css")));

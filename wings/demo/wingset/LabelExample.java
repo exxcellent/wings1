@@ -63,7 +63,8 @@ public class LabelExample extends WingSetPane
         testLabel.setAttribute("color", "#AA0000");
         testLabel.setAttribute("font-weight", "bold");
 
-        all.add(new SLabel("Control the LabelText's position"));
+        all.add(new SLabel("<html>Control the LabelText's position \u5931\u6548\u65E5\u671F"));
+        all.add(new SLabel("<html>Control the LabelText's position \u5931\u6548\u65E5\u671F"));
         all.add(new SLabel("Result"));
         all.add(createRoundRadio(testLabel));
         all.add(testLabel);

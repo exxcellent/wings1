@@ -15,6 +15,7 @@
 package org.wings.io;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletOutputStream;
 
 /**
@@ -25,16 +26,18 @@ import javax.servlet.ServletOutputStream;
  */
 public final class ServletDevice implements Device
 {
-    private ServletOutputStream out;
+    private final ServletOutputStream out;
+    private final String encoding;
 
     /**
-     * TODO: documentation
+     * Creates a Device which writes to a servlet output stream.
      *
-     * @param out
-     * @return
+     * @param out The servlet <b>byte</b> output stream
+     * @param  characterEncoding The encoding to transcode Strings before passing to the byte output stream.
      */
-    public ServletDevice (ServletOutputStream out) {
+    public ServletDevice (ServletOutputStream out, String characterEncoding) {
         this.out = out;
+        this.encoding = characterEncoding;
     }
 
     public boolean isSizePreserving() { return true; }
@@ -55,9 +58,17 @@ public final class ServletDevice implements Device
      */
     public Device print (String s)  throws IOException {
         if (s == null)
-            out.print ("null");
-        else
-            out.print (s);
+            out.print("null");
+        else {
+            try {
+                byte[] bytes = s.getBytes(this.encoding);
+                for (int i = 0; i < bytes.length; i++) {
+                    out.write(bytes[i]);
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new IOException("Unknown session encoding?!" + e);
+            }
+        }
         return this;
     }
 
@@ -65,7 +76,7 @@ public final class ServletDevice implements Device
      * Print an integer.
      */
     public Device print (int i)    throws IOException {
-        out.print (i);
+        out.print(i);
         return this;
     }
 
@@ -74,9 +85,17 @@ public final class ServletDevice implements Device
      */
     public Device print (Object o) throws IOException {
         if (o == null)
-            out.print ("null");
-        else
-            out.print (o.toString());
+            out.print("null");
+        else {
+            try {
+                byte[] bytes = o.toString().getBytes(this.encoding);
+                for (int i = 0; i < bytes.length; i++) {
+                    out.write(bytes[i]);
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new IOException("Unknown session encoding?!" + e);
+            }
+        }
         return this;
     }
 
@@ -84,15 +103,14 @@ public final class ServletDevice implements Device
      * Print a character.
      */
     public Device print (char c) throws IOException {
-        out.print(c);
-        return this;
+        return print(new String(new char[] {c})); // reuse encoding handling of print(String)
     }
 
     /**
      * Print an array of chars.
      */
     public Device print (char[] c) throws IOException {
-        return print(c, 0, c.length-1);
+        return print(new String(c));
     }
 
     /**
@@ -101,7 +119,7 @@ public final class ServletDevice implements Device
     public Device print (char[] c, int start, int len) throws IOException {
         final int end = start + len;
         for (int i=start; i < end; ++i)
-            out.print(c[i]);
+            print(c[i]);
         return this;
     }
 

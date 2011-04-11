@@ -499,34 +499,6 @@ final class SessionServlet
         }
     }
 
-    /**
-     * create a Device that is used to deliver the content, that is
-     * session specific.
-     * The default
-     * implementation just creates a ServletDevice. You can override this
-     * method to decide yourself what happens to the output. You might, for
-     * instance, write some device, that logs the output for debugging
-     * purposes, or one that creates a gziped output stream to transfer
-     * data more efficiently. You get the request and response as well as
-     * the ExternalizedResource to decide, what kind of device you want to create.
-     * You can rely on the fact, that extInfo is not null.
-     * Further, you can rely on the fact, that noting has been written yet
-     * to the output, so that you can set you own set of Headers.
-     *
-     * @param request  the HttpServletRequest that is answered
-     * @param response the HttpServletResponse.
-     * @param extInfo  the externalized info of the resource about to be
-     *                 delivered.
-     */
-    protected Device createOutputDevice(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        ExternalizedResource extInfo)
-            throws IOException {
-        return new ServletDevice(response.getOutputStream());
-    }
-
-
-
     // Exception Handling
 
     private SFrame errorFrame;
@@ -571,7 +543,7 @@ final class SessionServlet
             ServletOutputStream out = res.getOutputStream();
             errorStackTraceLabel.setText(DebugUtil.getStackTraceString(e));
             errorMessageLabel.setText(e.getMessage());
-            errorFrame.write(new ServletDevice(out));
+            errorFrame.write(new ServletDevice(out, getSession().getCharacterEncoding()));
             }
         } catch (IOException ioException) {
             logger.info("IOException occurred during errorHandling. Guess this is a harmless aborted request.");

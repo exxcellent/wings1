@@ -28,9 +28,9 @@ public class LDAP
 	throws NamingException
     {
 	if (objectClasses.size() == 0) {
-	    NamingEnumeration enum = schema.listBindings("ClassDefinition");
-	    while (enum.hasMore()) {
-		Binding binding = (Binding)enum.next();
+	    NamingEnumeration num = schema.listBindings("ClassDefinition");
+	    while (num.hasMore()) {
+		Binding binding = (Binding)num.next();
 		objectClasses.add(binding.getName());
 	    }
 	}
@@ -85,9 +85,9 @@ public class LDAP
 	Map attributes = new HashMap();
 	Attribute names = classDefinition.get((maymust == MUST) ? "MUST" : "MAY");
 	if (names != null) {
-	    NamingEnumeration enum = names.getAll();
-	    while (enum.hasMore()) {
-		String name = (String)enum.next();
+	    NamingEnumeration num = names.getAll();
+	    while (num.hasMore()) {
+		String name = (String)num.next();
 		attributes.put(name, getAttributeDefinition(schema, name));
 	    }
 	}
@@ -113,9 +113,9 @@ public class LDAP
 
 		Attribute must = classDefinition.get("MUST");
 		if (must != null) {
-		    NamingEnumeration enum = must.getAll();
-		    while (enum.hasMore()) {
-			String name = (String)enum.next();
+		    NamingEnumeration num = must.getAll();
+		    while (num.hasMore()) {
+			String name = (String)num.next();
 			System.out.println("attribute (MUST): " + name);
 			
 			Attributes attributes = schema.getAttributes("AttributeDefinition/" + name);
@@ -129,9 +129,9 @@ public class LDAP
 
 		Attribute may = classDefinition.get("MAY");
 		if (may != null) {
-		    NamingEnumeration enum = may.getAll();
-		    while (enum.hasMore()) {
-			String name = (String)enum.next();
+		    NamingEnumeration num = may.getAll();
+		    while (num.hasMore()) {
+			String name = (String)num.next();
 			System.out.println("attribute (MAY): " + name);
 			
 			Attributes attributes = schema.getAttributes("AttributeDefinition/" + name);

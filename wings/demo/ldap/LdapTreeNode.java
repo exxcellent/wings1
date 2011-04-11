@@ -189,7 +189,7 @@ public class LdapTreeNode
             DefaultMutableTreeNode root = new DefaultMutableTreeNode();
             root.add(node);
 
-            Enumeration enum = root.breadthFirstEnumeration();
+            Enumeration num = root.breadthFirstEnumeration();
         }
 	catch (NamingException e) {
             System.err.println(e.getMessage());

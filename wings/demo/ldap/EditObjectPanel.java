@@ -135,9 +135,9 @@ public class EditObjectPanel
 
         try {
 	    List modifications = new LinkedList();
-	    NamingEnumeration enum = attributes.getAll();
-	    while (enum.hasMore()) {
-		Attribute editedAttribute = (Attribute)enum.next();
+	    NamingEnumeration num = attributes.getAll();
+	    while (num.hasMore()) {
+		Attribute editedAttribute = (Attribute)num.next();
 		Attribute backedAttribute = backedAttributes.get(editedAttribute.getID());
 
 		if (editedAttribute.equals(backedAttribute))

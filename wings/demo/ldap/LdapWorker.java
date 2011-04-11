@@ -203,10 +203,10 @@ public class LdapWorker
 	try {
 	    DirContext dc = ctx.getSchemaClassDefinition(dn);
 	    
-	    NamingEnumeration enum = dc.search("", null);
+	    NamingEnumeration num = dc.search("", null);
 	    myNames = new Vector();
-	    while (enum.hasMore()) {
-		SearchResult si = (SearchResult)enum.next(); 
+	    while (num.hasMore()) {
+		SearchResult si = (SearchResult)num.next();
 		Attributes ocAttrs = si.getAttributes();
 		Attribute name = ocAttrs.get("NAME");
 		Attribute must = ocAttrs.get("MUST");
@@ -263,9 +263,9 @@ public class LdapWorker
 	    matchAttrs.put(new BasicAttribute(attrName));
 	    //Search for objects that have those matching attributes
 	    
-	    NamingEnumeration enum = search(dn, "(objectclass=*)",new String[] {attrName}, SearchControls.OBJECT_SCOPE);
-	    while (enum.hasMore()) {
-		SearchResult sr = (SearchResult)enum.next();
+	    NamingEnumeration num = search(dn, "(objectclass=*)",new String[] {attrName}, SearchControls.OBJECT_SCOPE);
+	    while (num.hasMore()) {
+		SearchResult sr = (SearchResult)num.next();
 		BasicAttributes bas = (BasicAttributes)sr.getAttributes();
 		BasicAttribute ba = (BasicAttribute)bas.get(attrName);
 		if (ba != null)
@@ -292,10 +292,10 @@ public class LdapWorker
 	    //NamingEnumeration enum = ctx.search(getBaseDN(), matchAttrs);
 	    SearchControls cons = new SearchControls();
 	    cons.setSearchScope(SearchControls.SUBTREE_SCOPE);
-	    NamingEnumeration enum = ctx.search(getBaseDN(), "(cn=*)",cons);
+	    NamingEnumeration num = ctx.search(getBaseDN(), "(cn=*)",cons);
 	    	   
-	    while (enum.hasMore()) {
-		SearchResult sr = (SearchResult)enum.next();
+	    while (num.hasMore()) {
+		SearchResult sr = (SearchResult) num.next();
 		BasicAttributes ba = (BasicAttributes)sr.getAttributes();
 		BasicAttribute cn = (BasicAttribute)ba.get("cn");
 		attrList.add(cn.get());

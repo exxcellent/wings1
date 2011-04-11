@@ -4,6 +4,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wings.externalizer.ExternalizedResource;
+import org.wings.session.Session;
 import org.wings.session.SessionManager;
 
 public abstract class DeviceFactory
@@ -65,7 +66,8 @@ public abstract class DeviceFactory
 	protected Device create(ExternalizedResource externalizedResource)
 	    throws IOException
 	{
-	    return new ServletDevice(SessionManager.getSession().getServletResponse().getOutputStream());
+        Session session = SessionManager.getSession();
+        return new ServletDevice(session.getServletResponse().getOutputStream(), session.getCharacterEncoding());
 	}
     }
 }

@@ -346,16 +346,16 @@ public class LdapBrowser
             SearchControls cons = new SearchControls();
             cons.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-            NamingEnumeration enum = context.search(basedn, filter, cons);
+            NamingEnumeration num = context.search(basedn, filter, cons);
             int i = 0;
-            while (enum.hasMore()) {
+            while (num.hasMore()) {
                 i++;
-                SearchResult searchResult = (SearchResult) enum.next();
+                SearchResult searchResult = (SearchResult) num.next();
                 //da ist sn hart kodiert und noch nicht so schoen
                 namesVector.add(searchResult.getAttributes().get("sn").toString());
 
             }
-            enum.close();
+            num.close();
             //namesList.setListData(namesVector);
             detailPanel.removeAll();
         } catch (NamingException e) {
@@ -381,14 +381,14 @@ public class LdapBrowser
                 SearchControls cons = new SearchControls();
                 cons.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-                NamingEnumeration enum = context.search(basedn, filter, cons);
+                NamingEnumeration num = context.search(basedn, filter, cons);
                 int i = 0;
-                while (enum.hasMore()) {
+                while (num.hasMore()) {
                     i++;
-                    SearchResult searchResult = (SearchResult) enum.next();
+                    SearchResult searchResult = (SearchResult) num.next();
                     data.add(searchResult.getAttributes());
                 }
-                enum.close();
+                num.close();
 //if (i==0)
                 detailPanel.removeAll();
             } catch (NamingException e) {

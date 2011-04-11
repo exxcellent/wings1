@@ -56,7 +56,8 @@
     <target depends="prepare" name="compile">
         <javac debug="${build.debug}" source="1.3" target="1.3"
                deprecation="${build.deprecation}" 
-               destdir="${build.class}" srcdir="src">
+               destdir="${build.class}" srcdir="src"
+               includeantruntime="false">
             <classpath refid="build.classpath"/>
         </javac>
     </target>
@@ -130,7 +131,8 @@
     <target depends="claf" name="claf-compile">
         <javac debug="${build.debug}" source="1.3" target="1.3"
                deprecation="${build.deprecation}" 
-               destdir="${build.class}" srcdir="build/src">
+               destdir="${build.class}" srcdir="build/src"
+               includeantruntime="false">
             <classpath refid="build.classpath"/>
         </javac>
     </target>

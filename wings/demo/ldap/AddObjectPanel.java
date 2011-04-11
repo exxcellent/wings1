@@ -188,10 +188,10 @@ public class AddObjectPanel
             
             Attributes attributes = editor.getData();
             Attributes specifiedAttributes = new BasicAttributes();
-            NamingEnumeration enum = attributes.getAll();
+            NamingEnumeration num = attributes.getAll();
             HashMap dnMap = new HashMap();
-	    while (enum.hasMore()) {
-		Attribute attribute = (Attribute)enum.next();
+	    while (num.hasMore()) {
+		Attribute attribute = (Attribute)num.next();
                 if (attribute.size() != 0) {
                     if (automatic) {
                         if (keyComponents.contains(attribute.getID().toLowerCase()))
