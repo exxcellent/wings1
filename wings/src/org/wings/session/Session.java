@@ -44,7 +44,7 @@ import java.util.*;
  * @author <a href="mailto:engels@mercatis.de">Holger Engels</a>
  * @version $Revision$
  */
-public final class Session
+public class Session
     implements PropertyService, Serializable {
 
     private final static Log logger = LogFactory.getLog("org.wings.session");

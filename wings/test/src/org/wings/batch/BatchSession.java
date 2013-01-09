@@ -14,29 +14,21 @@
 
 package org.wings.batch;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import org.wings.DefaultReloadManager;
+import org.wings.SComponent;
+import org.wings.externalizer.ExternalizeManager;
+import org.wings.io.Device;
+import org.wings.io.StringBufferDevice;
+import org.wings.plaf.LookAndFeel;
+import org.wings.session.Session;
+import org.wings.session.SessionManager;
 
-import org.wings.*;
-import org.wings.io.*;
-import org.wings.plaf.*;
-import org.wings.session.*;
-import org.wings.externalizer.*;
-
-/**
- * TODO: documentation
- *
- * @author <a href="mailto:engels@mercatis.de">Holger Engels</a>
- * @version $Revision$
- */
 public class BatchSession
     extends Session
 {
-    ExternalizeManager externalizeManager = new ExternalizeManager(null);
+    ExternalizeManager externalizeManager = new ExternalizeManager();
 
     public BatchSession()
 	throws Exception
