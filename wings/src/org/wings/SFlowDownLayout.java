@@ -37,6 +37,12 @@ public class SFlowDownLayout extends SFlowLayout
         setOrientation(SConstants.VERTICAL);
         setAlignment(SConstants.LEFT_ALIGN);
     }
+
+    public SFlowDownLayout(int alignment) {
+        super(alignment);
+        setOrientation(SConstants.VERTICAL);
+        setAlignment(alignment);
+    }
 }
 
 /*
