@@ -155,6 +155,20 @@ static final SResourceIcon ICON = new SResourceIcon("org/wings/icons/ArrowDown.g
         }
 
 %>
+        <meta http-equiv="Content-type" content="text/html; charset=<%=encoding%>"/>
+<%
+          Iterator it = headers.iterator();
+          while (it.hasNext()) {
+              Object next = it.next();
+              if (next instanceof Renderable) {
+                  ((Renderable)next).write(device);
+               } else {
+                  %><%=next.toString()%><%
+              }
+%>
+<%
+          }
+%>
 <style type="text/css">
 <%
 if ( frame.getBackground()!=null || frame.getForeground()!=null ) {
@@ -182,22 +196,7 @@ if ( frame.getALinkColor()!=null ) {
 }
 %>
 </style>
-
-        <meta http-equiv="Content-type" content="text/html; charset=<%=encoding%>"/>
-<%
-        Iterator it = headers.iterator();
-        while (it.hasNext()) {
-            Object next = it.next();
-            if (next instanceof Renderable) {
-                ((Renderable)next).write(device);
-             } else {
-                %><%=next.toString()%><%
-            }
-            %>
-<%
-        }
-
-    SToolTipManager toolTipManager = frame.getSession().getToolTipManager();
+<%    SToolTipManager toolTipManager = frame.getSession().getToolTipManager();
     String followMouse = "";
     if ( toolTipManager.isFollowMouse() ) {
         followMouse = ", 'trail', true";
