@@ -35,15 +35,15 @@ private static final SIcon BLIND_ICON = new SResourceIcon("org/wings/icons/blind
    if (component.getDefaultButton() != null)
           returnButtonEvent = Utils.event(component.getDefaultButton()); 
    %>><input type="image" name="<%=returnButtonEvent%>" border="0" <%|src=BLIND_ICON.getURL()
-    %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+    %> width="0" height="0" tabindex="" style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"/><%
     // See Form.js and SForm.getDefaultButton for the reason of this virtual submit button
     %><input type="image" name="js_submit" border="0" <%|src=BLIND_ICON.getURL()
-    %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+    %> width="0" height="0" tabindex="" style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"/><%
    %><input type="hidden" name="<%=Utils.event(component)%>" value="<%?componentId
    %><%=org.wings.SConstants.UID_DIVIDER%>" /><%
      Utils.renderContainer(device, component);
    %><input type="image" name="<%=returnButtonEvent%>" border="0" <%|src=BLIND_ICON.getURL()
-   %> width="0" height="0" tabindex="" style="border-style:none;padding:0px;display:inline;margin:0px;"/><%
+   %> width="0" height="0" tabindex="" style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"/><%
 
    %></form><%
 %>
