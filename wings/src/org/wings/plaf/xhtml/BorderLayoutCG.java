@@ -85,7 +85,7 @@ public class BorderLayoutCG
         d.print("\n<tr>");
         
         if (west != null) {
-            d.print("<td style=\"width:0%;");
+            d.print("<td style=\"");
             d.print(inlineStylesForGaps);
             d.print("\"");
             Utils.printTableCellAlignment(d, west);
@@ -110,7 +110,7 @@ public class BorderLayoutCG
         }
         
         if (east != null) {
-            d.print("<td  style=\"width:0%;");
+            d.print("<td style=\"");
             d.print(inlineStylesForGaps);
             d.print("\"");
             Utils.printTableCellAlignment(d, east);

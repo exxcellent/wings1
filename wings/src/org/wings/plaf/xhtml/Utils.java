@@ -159,8 +159,38 @@ public final class Utils implements SConstants
         throws IOException {
         printTableCellColors(s, c);
         printTableCellAlignment(s,c);
-        if (c != null && c.getStyle() != null)
-            s.print(" class=\"").print(c.getStyle()).print("\"");
+        if(c != null){
+
+            if(c instanceof SLabel){
+                SLabel label = (SLabel) c;
+
+                // oh my god, its a spacer
+                if (label.getIcon() != null && label.getIcon().getURL() != null && label.getIcon().getURL().toString().equals("-de/exxcellent/dsw/resources/images/emptyPixel.gif")) {
+
+                    int hoehe = label.getIcon().getIconHeight();
+                    int breite = label.getIcon().getIconWidth();
+                    if(hoehe!=-1 || breite != -1){
+
+                        if(hoehe==111){
+                            // für default werte klasse setzen
+                            s.print(" class=\"spaxxi\"");
+                        }   else {
+                            s.print(" style=\"");
+                            if(hoehe !=-1){
+                                s.print("height:"+hoehe+"px;");
+                            }
+                            if(breite!=-1){
+                                s.print("width:"+breite+"px;");
+                            }
+                            s.print("\"");
+                        }
+                    }
+            }
+            }
+            // für ein normals label oder ein andere comp, alles wie immer..
+            if(c.getStyle() != null)
+                s.print(" class=\"").print(c.getStyle()).print("\"");
+        }
     }
 
     public static void printIcon(Device d, SIcon icon, String align) 

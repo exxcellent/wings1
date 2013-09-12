@@ -368,7 +368,7 @@ public class SPageScroller
         SPanel backwardPanel = null;
         SPanel middlePanel = null;
         if ( layoutMode==SConstants.VERTICAL) {
-            middlePanel = new SPanel(new SFlowDownLayout());
+            middlePanel = new SPanel(new SFlowDownLayout(SConstants.CENTER_ALIGN));
 
             backwardPanel = new SPanel(new SFlowDownLayout());
             add(backwardPanel, SBorderLayout.NORTH);
@@ -377,7 +377,7 @@ public class SPageScroller
             add(forwardPanel, SBorderLayout.SOUTH);
         }
         else {
-            middlePanel = new SPanel(new SFlowLayout());
+            middlePanel = new SPanel(new SFlowLayout(SConstants.CENTER_ALIGN));
 
             backwardPanel = new SPanel(new SFlowLayout());
             add(backwardPanel, SBorderLayout.WEST);

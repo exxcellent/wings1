@@ -71,7 +71,7 @@ public class SFlowLayout
     public SFlowLayout() {
         components = new ArrayList(2);
         setOrientation(SConstants.HORIZONTAL);
-        setAlignment(SConstants.CENTER_ALIGN);
+        setAlignment(SConstants.LEFT_ALIGN);
     }
 
     /**

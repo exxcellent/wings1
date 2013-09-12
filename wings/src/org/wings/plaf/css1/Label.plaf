@@ -4,7 +4,14 @@
 <property type="SIcon" name="clickableFallbackIcon">org/wings/icons/Pencil.gif</property>
 
 public void writeIcon(Device device, SIcon icon, SLabel label, AnchorProperties anchor) throws IOException {
+
+
     if (icon != null) {
+
+                if(icon.getURL().toString().equals("-de/exxcellent/dsw/resources/images/emptyPixel.gif")){
+
+
+                }   else {
         writeAnchorStart(device, anchor, label);
         %><img border="0"<%
         if (label.isImageAbsBottom()) {
@@ -17,7 +24,7 @@ public void writeIcon(Device device, SIcon icon, SLabel label, AnchorProperties 
         Utils.writeEvents(device, label);
         %> /><%
         writeAnchorEnd(device, anchor);
-    }
+    }}
 }
 
 public void writeText(Device device, SLabel label, AnchorProperties anchor) throws IOException {

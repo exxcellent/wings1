@@ -62,6 +62,7 @@ public class BoxLayoutCG implements LayoutCG {
         SComponent c = (SComponent)iter.next();
         
         d.print("<td");
+          Utils.printTableCellAttributes(d, c);
         
         Utils.printTableCellAlignment(d, c);
         if (c instanceof SContainer && c.isVisible() && Utils.hasSpanAttributes(c)) {
@@ -88,7 +89,8 @@ public class BoxLayoutCG implements LayoutCG {
         SComponent c = (SComponent)iter.next();
         
         d.print("<td");
-        
+        Utils.printTableCellAttributes(d, c);
+
         Utils.printTableCellAlignment(d, c);
         if (c instanceof SContainer && c.isVisible() && Utils.hasSpanAttributes(c)) {
           // Adapt inner styles (esp. width of containers)

@@ -63,12 +63,17 @@ implements LayoutCG {
             }
             
             d.print("><tr><td");
+            Utils.printTableCellAttributes(d, comp);
+          } else {
+              if (orientation == SConstants.VERTICAL){
+              d.print("</td></tr>\n<tr><td");
+              Utils.printTableCellAttributes(d, comp);
+              } else {
+                  d.print("</td><td");
+                  Utils.printTableCellAttributes(d, comp);
+              }
           }
-          else if (orientation == SConstants.VERTICAL)
-            d.print("</td></tr>\n<tr><td");
-          else
-            d.print("</td><td");
-          
+
           SComponent c = ((SComponent)components.get(i));
           Utils.printTableCellAlignment(d, c);
 

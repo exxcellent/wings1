@@ -110,11 +110,13 @@ public class GridLayoutCG
 
             SComponent c = (SComponent)iter.next();
 
-            if (firstRow && header) 
+            if (firstRow && header) {
                 d.print("<th");          
-            else 
+            } else {
                 d.print("<td");
+            }
 
+            Utils.printTableCellAttributes(d, c);
             Utils.printTableCellAlignment(d, c);
             if (c instanceof SContainer && c.isVisible() && Utils.hasSpanAttributes(c)) {
                // Adapt inner styles (esp. width of containers)
